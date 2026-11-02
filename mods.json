@@ -34,6 +34,7 @@
   },
   {
     "name": "mission-control",
+    "version": "2.0.1",
     "title": "Mission Control",
     "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
     "command": "/mission · /alltasks (and Claude Code's /goal)",

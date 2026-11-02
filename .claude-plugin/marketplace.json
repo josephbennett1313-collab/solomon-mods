@@ -22,7 +22,7 @@
       "name": "mission-control",
       "source": "./mods/mission-control",
       "description": "Mission Control: A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "author": {
         "name": "Joseph Bennett"
       },

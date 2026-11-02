@@ -1171,7 +1171,7 @@ export function registerDesk(on: On) {
     if (off) return next(e)
     if (e.element === 'open-report' || e.element === 'open-mods') {
       // Ask the other mod to open its pane: it checks for this file every few seconds.
-      const mod = e.element === 'open-report' ? 'chat-ledger' : 'mod-switchboard'
+      const mod = e.element === 'open-report' ? 'session-ledger' : 'mod-switchboard'
       try {
         await $.process.run(['mkdir', '-p', `${home}/.claude/mods`])
         await $.fs.write(`${home}/.claude/mods/.open-${mod}-${sessionId}`, e.element === 'open-report' ? 'report' : '')
