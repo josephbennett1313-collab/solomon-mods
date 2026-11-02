@@ -1,0 +1,16 @@
+{
+  "title": "Higgs Content",
+  "what": "A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
+  "command": "/create",
+  "pane": true,
+  "parts": [
+    {
+      "key": "upgrade",
+      "label": "Upgrade my prompt before creating"
+    },
+    {
+      "key": "quote",
+      "label": "Show the credit cost and wait for my yes"
+    }
+  ]
+}

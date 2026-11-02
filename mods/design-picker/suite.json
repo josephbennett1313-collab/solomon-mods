@@ -1,0 +1,20 @@
+{
+  "title": "Design Picker",
+  "what": "Opens by itself on design questions: live mockup cards built with design skills, with motion, and a Send to Figma step",
+  "command": "/styles",
+  "pane": true,
+  "parts": [
+    {
+      "key": "tool",
+      "label": "Let Claude open it before building a new interface"
+    },
+    {
+      "key": "auto",
+      "label": "Open by itself when you ask to build a page, site or app"
+    },
+    {
+      "key": "figma",
+      "label": "Show Send to Figma on each style"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "title": "Command Guard",
+  "what": "Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
+  "command": "/guard",
+  "pane": false,
+  "parts": []
+}

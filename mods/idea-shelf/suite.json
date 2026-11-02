@@ -1,0 +1,12 @@
+{
+  "title": "Idea Shelf",
+  "what": "Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
+  "command": "/shelf \u00b7 /idea",
+  "pane": true,
+  "parts": [
+    {
+      "key": "band",
+      "label": "Shelf count above the prompt"
+    }
+  ]
+}

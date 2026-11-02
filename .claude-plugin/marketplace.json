@@ -1,0 +1,212 @@
+{
+  "name": "solomon-mods",
+  "owner": {
+    "name": "Joseph Bennett"
+  },
+  "metadata": {
+    "description": "Free Claude Code mods by Joseph Bennett: cost and cache control, task tracking, helpers, guards, reports and creative studios.",
+    "version": "2.0.0"
+  },
+  "plugins": [
+    {
+      "name": "session-keeper",
+      "source": "./mods/session-keeper",
+      "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "mission-control",
+      "source": "./mods/mission-control",
+      "description": "Mission Control: A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "helper-desk",
+      "source": "./mods/helper-desk",
+      "description": "Helper Desk: A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "collision-guard",
+      "source": "./mods/collision-guard",
+      "description": "Collision Guard: Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "prompt-forge",
+      "source": "./mods/prompt-forge",
+      "description": "Prompt Forge: Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "rule-keeper",
+      "source": "./mods/rule-keeper",
+      "description": "Rule Keeper: Spots lasting rules you give Claude and saves the ones you approve to your Obsidian vault, plus pins above the prompt",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "session-ledger",
+      "source": "./mods/session-ledger",
+      "description": "Session Ledger: In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "mod-switchboard",
+      "source": "./mods/mod-switchboard",
+      "description": "Mod Switchboard: One Mods tab with an on/off switch for every mod and every part of a mod",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "higgs-content",
+      "source": "./mods/higgs-content",
+      "description": "Higgs Content: A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "auto-model",
+      "source": "./mods/auto-model",
+      "description": "Auto Model: Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "file-tree",
+      "source": "./mods/file-tree",
+      "description": "File Tree: A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "design-picker",
+      "source": "./mods/design-picker",
+      "description": "Design Picker: Opens by itself on design questions: live mockup cards built with design skills, with motion, and a Send to Figma step",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "idea-shelf",
+      "source": "./mods/idea-shelf",
+      "description": "Idea Shelf: Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "edit-rewind",
+      "source": "./mods/edit-rewind",
+      "description": "Edit Rewind: Step through a turn's edits, undo a turn, and restore from a snapshot timeline",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "privacy-shield",
+      "source": "./mods/privacy-shield",
+      "description": "Privacy Shield: Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "assumption-radar",
+      "source": "./mods/assumption-radar",
+      "description": "Assumption Radar: Lists decisions Claude made without asking so you can mark each right or wrong",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "command-guard",
+      "source": "./mods/command-guard",
+      "description": "Command Guard: Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "limit-guard",
+      "source": "./mods/limit-guard",
+      "description": "Limit Guard: Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "voice-guard",
+      "source": "./mods/voice-guard",
+      "description": "Voice Guard: Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    },
+    {
+      "name": "site-check",
+      "source": "./mods/site-check",
+      "description": "Site Check: /sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes",
+      "version": "2.0.0",
+      "author": {
+        "name": "Joseph Bennett"
+      },
+      "license": "MIT"
+    }
+  ]
+}

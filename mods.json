@@ -1,0 +1,384 @@
+[
+  {
+    "name": "session-keeper",
+    "title": "Session Keeper",
+    "what": "A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
+    "command": "/keeper · /handoff · /keepwarm",
+    "pane": false,
+    "parts": [
+      {
+        "key": "bar",
+        "label": "Cache bar above the prompt (cache, context, rewrite $, session $, 5 hrs, week)"
+      },
+      {
+        "key": "fox",
+        "label": "Animated red fox on the bar"
+      },
+      {
+        "key": "suggest",
+        "label": "Smart button that suggests the best command right now"
+      },
+      {
+        "key": "hold",
+        "label": "Hold my message when the cache has gone cold and show the cost first"
+      },
+      {
+        "key": "handoff",
+        "label": "Offer a handoff when the chat gets long"
+      },
+      {
+        "key": "keepwarm",
+        "label": "Allow keep-warm pings"
+      }
+    ]
+  },
+  {
+    "name": "mission-control",
+    "title": "Mission Control",
+    "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+    "command": "/mission · /alltasks (and Claude Code's /goal)",
+    "pane": true,
+    "parts": [
+      {
+        "key": "taskbar",
+        "label": "Red task bar above the prompt"
+      },
+      {
+        "key": "goal",
+        "label": "Goal meter for /goal"
+      },
+      {
+        "key": "activity",
+        "label": "Activity feed in plain words"
+      },
+      {
+        "key": "smart-words",
+        "label": "Smarter activity wording (uses a small model call)",
+        "default": false
+      },
+      {
+        "key": "autoopen",
+        "label": "Open the pane when helpers start"
+      },
+      {
+        "key": "open-at-start",
+        "label": "Open the pane when a chat starts"
+      },
+      {
+        "key": "nudge",
+        "label": "Remind Claude to keep a task list"
+      },
+      {
+        "key": "worker-steps",
+        "label": "Let helpers report their steps"
+      }
+    ]
+  },
+  {
+    "name": "helper-desk",
+    "title": "Helper Desk",
+    "what": "A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+    "command": "/helpers · /team",
+    "pane": true,
+    "parts": [
+      {
+        "key": "cards",
+        "label": "A card per helper agent"
+      },
+      {
+        "key": "todos",
+        "label": "Saved to-do list"
+      },
+      {
+        "key": "dock",
+        "label": "Team size and helper model for the next request"
+      },
+      {
+        "key": "autoopen",
+        "label": "Open the tab by itself when helpers start"
+      }
+    ]
+  },
+  {
+    "name": "collision-guard",
+    "title": "Collision Guard",
+    "what": "Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
+    "command": "/collisions",
+    "pane": false,
+    "parts": [
+      {
+        "key": "ask",
+        "label": "Ask before editing a file another chat changed in the last 30 minutes"
+      },
+      {
+        "key": "toast",
+        "label": "Show a heads-up when another chat starts editing a file this chat uses"
+      }
+    ]
+  },
+  {
+    "name": "prompt-forge",
+    "title": "Prompt Forge",
+    "what": "Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
+    "command": "/forge · /after · /shape · /coach",
+    "pane": false,
+    "parts": [
+      {
+        "key": "shape",
+        "label": "Catch long brain dumps, ask what matters, and offer an \"Act as\" brief"
+      },
+      {
+        "key": "coach",
+        "label": "Suggest a sharper version of short, vague prompts"
+      },
+      {
+        "key": "after",
+        "label": "/after queue: send prompts when Claude finishes"
+      }
+    ]
+  },
+  {
+    "name": "rule-keeper",
+    "title": "Rule Keeper",
+    "what": "Spots lasting rules you give Claude and saves the ones you approve to your Obsidian vault, plus pins above the prompt",
+    "command": "/pin · /reflect",
+    "pane": false,
+    "parts": [
+      {
+        "key": "reflect",
+        "label": "Offer a rule right after you correct Claude"
+      },
+      {
+        "key": "pins",
+        "label": "Pinned notes for this chat"
+      },
+      {
+        "key": "context",
+        "label": "Add saved rules to each chat"
+      }
+    ]
+  },
+  {
+    "name": "session-ledger",
+    "title": "Session Ledger",
+    "what": "In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
+    "command": "/ledger · /report",
+    "pane": true,
+    "parts": [
+      {
+        "key": "autoopen",
+        "label": "Open the pane by itself"
+      },
+      {
+        "key": "report",
+        "label": "Today's Report tab"
+      }
+    ]
+  },
+  {
+    "name": "mod-switchboard",
+    "title": "Mod Switchboard",
+    "what": "One Mods tab with an on/off switch for every mod and every part of a mod",
+    "command": "/mods",
+    "pane": true,
+    "parts": []
+  },
+  {
+    "name": "higgs-content",
+    "title": "Higgs Content",
+    "what": "A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
+    "command": "/create",
+    "pane": true,
+    "parts": [
+      {
+        "key": "upgrade",
+        "label": "Upgrade my prompt before creating"
+      },
+      {
+        "key": "quote",
+        "label": "Show the credit cost and wait for my yes"
+      }
+    ]
+  },
+  {
+    "name": "auto-model",
+    "title": "Auto Model",
+    "what": "Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
+    "command": "/automodel",
+    "pane": false,
+    "parts": [
+      {
+        "key": "model",
+        "label": "Pick the model for each prompt"
+      },
+      {
+        "key": "effort",
+        "label": "Pick the effort for each prompt"
+      },
+      {
+        "key": "fast",
+        "label": "Turn on Fast mode when speed matters"
+      },
+      {
+        "key": "ultracode",
+        "label": "Add ultracode to big multi-file code jobs (runs many helpers, uses more of your plan)",
+        "default": false
+      },
+      {
+        "key": "compact",
+        "label": "Compact before a switch that would re-read a long chat"
+      },
+      {
+        "key": "chip",
+        "label": "Model chip above the prompt"
+      }
+    ]
+  },
+  {
+    "name": "file-tree",
+    "title": "File Tree",
+    "what": "A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
+    "command": "/files",
+    "pane": true,
+    "parts": [
+      {
+        "key": "tree",
+        "label": "Folder tree"
+      },
+      {
+        "key": "autoopen",
+        "label": "Open the tab when Claude starts editing"
+      }
+    ]
+  },
+  {
+    "name": "design-picker",
+    "title": "Design Picker",
+    "what": "Opens by itself on design questions: live mockup cards built with design skills, with motion, and a Send to Figma step",
+    "command": "/styles",
+    "pane": true,
+    "parts": [
+      {
+        "key": "tool",
+        "label": "Let Claude open it before building a new interface"
+      },
+      {
+        "key": "auto",
+        "label": "Open by itself when you ask to build a page, site or app"
+      },
+      {
+        "key": "figma",
+        "label": "Show Send to Figma on each style"
+      }
+    ]
+  },
+  {
+    "name": "idea-shelf",
+    "title": "Idea Shelf",
+    "what": "Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
+    "command": "/shelf · /idea",
+    "pane": true,
+    "parts": [
+      {
+        "key": "band",
+        "label": "Shelf count above the prompt"
+      }
+    ]
+  },
+  {
+    "name": "edit-rewind",
+    "title": "Edit Rewind",
+    "what": "Step through a turn's edits, undo a turn, and restore from a snapshot timeline",
+    "command": "/rewind-edits · /tm",
+    "pane": true,
+    "parts": [
+      {
+        "key": "hint",
+        "label": "Show the rewind hint above the prompt"
+      },
+      {
+        "key": "status",
+        "label": "Show edit count in the status line",
+        "default": false
+      }
+    ]
+  },
+  {
+    "name": "privacy-shield",
+    "title": "Privacy Shield",
+    "what": "Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
+    "command": "/screen-share",
+    "pane": false,
+    "parts": [
+      {
+        "key": "screen",
+        "label": "Screen-share masking (/screen-share)"
+      },
+      {
+        "key": "secrets",
+        "label": "Hide keys and tokens from Claude"
+      },
+      {
+        "key": "prompt",
+        "label": "Catch keys pasted into a prompt"
+      },
+      {
+        "key": "keyfiles",
+        "label": "Ask before Claude opens key files (.env and the like)"
+      }
+    ]
+  },
+  {
+    "name": "assumption-radar",
+    "title": "Assumption Radar",
+    "what": "Lists decisions Claude made without asking so you can mark each right or wrong",
+    "command": "/assumptions",
+    "pane": true,
+    "parts": []
+  },
+  {
+    "name": "command-guard",
+    "title": "Command Guard",
+    "what": "Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
+    "command": "/guard",
+    "pane": false,
+    "parts": []
+  },
+  {
+    "name": "limit-guard",
+    "title": "Limit Guard",
+    "what": "Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
+    "command": "/limits",
+    "pane": false,
+    "parts": [
+      {
+        "key": "helpers",
+        "label": "Cap helpers started in one turn"
+      },
+      {
+        "key": "loops",
+        "label": "Stop the same failing command repeating"
+      },
+      {
+        "key": "size",
+        "label": "Warn before a huge file is read"
+      }
+    ]
+  },
+  {
+    "name": "voice-guard",
+    "title": "Voice Guard",
+    "what": "Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
+    "command": "/voice",
+    "pane": false,
+    "parts": []
+  },
+  {
+    "name": "site-check",
+    "title": "Site Check",
+    "what": "/sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes",
+    "command": "/sitecheck",
+    "pane": false,
+    "parts": []
+  }
+]

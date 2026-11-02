@@ -1,0 +1,16 @@
+{
+  "title": "Collision Guard",
+  "what": "Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
+  "command": "/collisions",
+  "pane": false,
+  "parts": [
+    {
+      "key": "ask",
+      "label": "Ask before editing a file another chat changed in the last 30 minutes"
+    },
+    {
+      "key": "toast",
+      "label": "Show a heads-up when another chat starts editing a file this chat uses"
+    }
+  ]
+}

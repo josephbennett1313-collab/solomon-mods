@@ -1,0 +1,10 @@
+{
+  "name": "voice-guard",
+  "version": "2.0.0",
+  "description": "Voice Guard: Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods"
+}

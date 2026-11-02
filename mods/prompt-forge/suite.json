@@ -1,0 +1,20 @@
+{
+  "title": "Prompt Forge",
+  "what": "Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
+  "command": "/forge \u00b7 /after \u00b7 /shape \u00b7 /coach",
+  "pane": false,
+  "parts": [
+    {
+      "key": "shape",
+      "label": "Catch long brain dumps, ask what matters, and offer an \"Act as\" brief"
+    },
+    {
+      "key": "coach",
+      "label": "Suggest a sharper version of short, vague prompts"
+    },
+    {
+      "key": "after",
+      "label": "/after queue: send prompts when Claude finishes"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "title": "Mod Switchboard",
+  "what": "One Mods tab with an on/off switch for every mod and every part of a mod",
+  "command": "/mods",
+  "pane": true,
+  "parts": []
+}

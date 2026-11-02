@@ -1,0 +1,10 @@
+{
+  "name": "command-guard",
+  "version": "2.0.0",
+  "description": "Command Guard: Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods"
+}

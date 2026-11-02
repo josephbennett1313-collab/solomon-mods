@@ -1,0 +1,11 @@
+{
+  "name": "auto-model",
+  "version": "2.0.0",
+  "description": "Auto Model: Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods",
+  "types": "./types/index.d.ts"
+}

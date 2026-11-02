@@ -1,0 +1,41 @@
+{
+  "title": "Mission Control",
+  "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+  "command": "/mission \u00b7 /alltasks (and Claude Code's /goal)",
+  "pane": true,
+  "parts": [
+    {
+      "key": "taskbar",
+      "label": "Red task bar above the prompt"
+    },
+    {
+      "key": "goal",
+      "label": "Goal meter for /goal"
+    },
+    {
+      "key": "activity",
+      "label": "Activity feed in plain words"
+    },
+    {
+      "key": "smart-words",
+      "label": "Smarter activity wording (uses a small model call)",
+      "default": false
+    },
+    {
+      "key": "autoopen",
+      "label": "Open the pane when helpers start"
+    },
+    {
+      "key": "open-at-start",
+      "label": "Open the pane when a chat starts"
+    },
+    {
+      "key": "nudge",
+      "label": "Remind Claude to keep a task list"
+    },
+    {
+      "key": "worker-steps",
+      "label": "Let helpers report their steps"
+    }
+  ]
+}

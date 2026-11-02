@@ -1,0 +1,20 @@
+{
+  "title": "Limit Guard",
+  "what": "Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
+  "command": "/limits",
+  "pane": false,
+  "parts": [
+    {
+      "key": "helpers",
+      "label": "Cap helpers started in one turn"
+    },
+    {
+      "key": "loops",
+      "label": "Stop the same failing command repeating"
+    },
+    {
+      "key": "size",
+      "label": "Warn before a huge file is read"
+    }
+  ]
+}

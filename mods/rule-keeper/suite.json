@@ -1,0 +1,20 @@
+{
+  "title": "Rule Keeper",
+  "what": "Spots lasting rules you give Claude and saves the ones you approve to your Obsidian vault, plus pins above the prompt",
+  "command": "/pin \u00b7 /reflect",
+  "pane": false,
+  "parts": [
+    {
+      "key": "reflect",
+      "label": "Offer a rule right after you correct Claude"
+    },
+    {
+      "key": "pins",
+      "label": "Pinned notes for this chat"
+    },
+    {
+      "key": "context",
+      "label": "Add saved rules to each chat"
+    }
+  ]
+}

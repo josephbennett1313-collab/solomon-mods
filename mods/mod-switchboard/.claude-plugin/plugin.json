@@ -1,0 +1,11 @@
+{
+  "name": "mod-switchboard",
+  "version": "2.0.0",
+  "description": "Mod Switchboard: One Mods tab with an on/off switch for every mod and every part of a mod",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods",
+  "types": "./types/index.d.ts"
+}

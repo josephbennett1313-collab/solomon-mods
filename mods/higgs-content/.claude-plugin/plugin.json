@@ -1,0 +1,11 @@
+{
+  "name": "higgs-content",
+  "version": "2.0.0",
+  "description": "Higgs Content: A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods",
+  "types": "./types/index.d.ts"
+}
