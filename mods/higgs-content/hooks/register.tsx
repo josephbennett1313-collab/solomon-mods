@@ -131,6 +131,7 @@ export const register: Register = on => {
   })
 
   on('command.run', { command: 'create' }, async ($, e) => {
+    if (!(await partOn($, NAME))) return { text: 'Higgs Content is off. Turn it on in /mods.' }
     await $.ui.open({ id: PANE, title: 'Higgs Content' })
     const idea = String(e.args ?? '').trim()
     if (idea) {
@@ -143,7 +144,7 @@ export const register: Register = on => {
   // Claude's Higgsfield calls fill in the cost, the balance and the gallery.
   on('tool.call', async ($, e, next) => {
     const m = HIGGS.exec(String(e.tool))
-    if (!m) return next(e)
+    if (!m || !(await partOn($, NAME))) return next(e)
     const r = await next(e)
     try {
       await observe($, m[1]!, JSON.stringify(e), JSON.stringify(r))
@@ -167,6 +168,7 @@ export const register: Register = on => {
     const ui = $.ui.resolve(e)
     const { Box, Text, Button } = ui
     const cols = Math.max(30, e.props.bodyColumns)
+    if (!(await partOn($, NAME))) return <Text dimColor>Higgs Content is switched off. Turn it on in /mods.</Text>
     const d = await draft($)
     const shots = await gallery($)
     const balance = (await $.state.get(BALANCE)).value ?? ''

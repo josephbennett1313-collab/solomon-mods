@@ -25,10 +25,9 @@ const NAME = 'mod-switchboard'
 const PANE = 'mod-switchboard'
 const TITLE = 'Mods'
 const NOTE = { plugin: 'mod-switchboard', key: 'note' } as const
-const OPEN = { plugin: 'mod-switchboard', key: 'expanded' } as const
+const OPEN = { plugin: 'mod-switchboard', key: 'collapsed' } as const
 const SCAN_MS = 10_000
 const POLL_MS = 3000
-const BTN_COLS = 24
 
 // The originals a suite mod takes the place of, so the pane can say so.
 let sid = ''
@@ -287,9 +286,8 @@ export const register: Register = on => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const noop = () => undefined
     const cols = Math.max(30, e.props.bodyColumns)
-    const left = Math.max(12, cols - BTN_COLS)
     const msg = (await $.state.get(NOTE)).value ?? ''
-    const { value: expanded = [] } = await $.state.get(OPEN)
+    const { value: collapsed = [] } = await $.state.get(OPEN)
     const json = await readSwitches($)
     let rows: Row[] = []
     try {
@@ -300,74 +298,54 @@ export const register: Register = on => {
     const suite = rows.filter(r => r.suite)
     const other = rows.filter(r => !r.suite)
     const onCount = suite.filter(r => isOn(json, r.name)).length
-    // Originals a suite mod replaces that are still installed: worth a note.
+    const partsOff = suite.reduce((n, r) => n + r.parts.filter(p => !isPartOn(json, r.name, p.key, p.byDefault)).length, 0)
     const names = new Set(rows.map(r => r.name))
-    const pill = (isActive: boolean, word: string) => (isActive ? <Text bold color={STATUS.good}>{word}</Text> : <Text dimColor>{word}</Text>)
+
+    // The switch: a green pill when on, a hollow dim one when off.
+    const pill = (key: string, isActive: boolean, dim = false) => (
+      <Button key={key} plain onPress={noop}>
+        {isActive && !dim ? <Text bold color={STATUS.good}>{'● ON '}</Text> : <Text dimColor>{'○ OFF'}</Text>}
+      </Button>
+    )
 
     const row = (m: Row) => {
       const off = m.switchable && !isOn(json, m.name)
       const hidden = isHidden(json, m.name)
-      const isOpen = expanded.includes(m.name)
+      const showParts = !collapsed.includes(m.name) && !off
       const dupes = m.replaces.filter(n => names.has(n))
       const offParts = m.parts.filter(p => !isPartOn(json, m.name, p.key, p.byDefault)).length
       return (
         <Box key={`row-${m.name}`} flexDirection="column" width={cols} borderStyle="round" borderDimColor={off} borderColor={off ? undefined : GRADIENT[1]} paddingX={1}>
-          <Box flexDirection="row" justifyContent="space-between" width={cols - 4}>
-            <Box flexDirection="row" gap={1} width={left - 4}>
-              <Text color={off ? undefined : GRADIENT[2]} dimColor={off}>
-                {MARK[m.name] ?? '•'}
-              </Text>
-              <Text bold dimColor={off} wrap="truncate-end">
-                {cut(m.title, left - 6)}
-              </Text>
+          <Box flexDirection="row" justifyContent="space-between" alignItems="center" width={cols - 4}>
+            <Box flexDirection="row" columnGap={1} flexShrink={1}>
+              <Text color={off ? undefined : GRADIENT[1]} dimColor={off}>{MARK[m.name] ?? '•'}</Text>
+              <Text bold dimColor={off} wrap="truncate-end">{m.title}</Text>
+              {m.tip ? <Text dimColor wrap="truncate-end">{cut(m.tip, Math.max(8, cols - 44))}</Text> : null}
             </Box>
-            {m.switchable ? (
-              <Box flexDirection="row" gap={1}>
-                {m.pane && !off && !hidden ? (
-                  <Button key={`open-${m.name}`} onPress={noop}>
-                    Open
-                  </Button>
-                ) : null}
-                {m.hide && !off ? (
-                  <Button key={`show-${m.name}`} onPress={noop}>
-                    {pill(!hidden, hidden ? 'Hidden' : 'Shown')}
-                  </Button>
-                ) : null}
-                <Button key={`toggle-${m.name}`} variant={off ? 'secondary' : 'primary'} onPress={noop}>
-                  {pill(!off, off ? 'Off' : 'On')}
-                </Button>
-              </Box>
-            ) : null}
+            <Box flexDirection="row" columnGap={1} flexShrink={0}>
+              {m.pane && !off && !hidden ? <Button key={`open-${m.name}`} plain label="Open" onPress={noop} /> : null}
+              {m.hide && !off ? <Button key={`show-${m.name}`} plain dimColor label={hidden ? 'Hidden' : 'Shown'} onPress={noop} /> : null}
+              {m.switchable ? pill(`toggle-${m.name}`, !off) : <Text dimColor>via /plugin</Text>}
+            </Box>
           </Box>
-          {m.what ? (
-            <Text dimColor wrap="wrap">
-              {m.what}
-            </Text>
-          ) : null}
-          {m.tip ? (
-            <Text dimColor italic wrap="truncate-end">
-              {cut(m.tip, cols - 4)}
-            </Text>
-          ) : null}
+          {m.what && !off ? <Text dimColor wrap="wrap">{m.what}</Text> : null}
           {m.chatOnly ? <Text color={STATUS.info}>Loaded in this chat only (testing)</Text> : null}
-          {m.switchable ? null : <Text dimColor>Not switchable here. Turn it off with /plugin.</Text>}
           {dupes.length ? <Text color={STATUS.warn}>{`Replaces ${dupes.join(', ')}, still installed: both run until you remove the old one.`}</Text> : null}
-          {m.parts.length ? (
+          {m.parts.length && !off ? (
             <Button key={`expand-${m.name}`} plain dimColor onPress={noop}>
-              {isOpen ? '▾ Parts' : `▸ ${m.parts.length} parts${offParts ? ` · ${offParts} off` : ''}`}
+              {showParts ? '▾ Parts' : `▸ ${m.parts.length} parts${offParts ? ` · ${offParts} off` : ''}`}
             </Button>
           ) : null}
-          {isOpen
+          {showParts
             ? m.parts.map(p => {
                 const pOn = isPartOn(json, m.name, p.key, p.byDefault)
                 return (
-                  <Box key={`p-${m.name}-${p.key}`} flexDirection="row" justifyContent="space-between" width={cols - 4}>
-                    <Text dimColor={!pOn || off} wrap="truncate-end">
-                      {cut(`${pOn ? '●' : '○'} ${p.label}`, cols - 14)}
-                    </Text>
-                    <Button key={`part-${m.name}~${p.key}`} plain onPress={noop}>
-                      {pill(pOn && !off, pOn ? 'On' : 'Off')}
-                    </Button>
+                  <Box key={`p-${m.name}-${p.key}`} flexDirection="row" justifyContent="space-between" alignItems="center" width={cols - 4}>
+                    <Box flexDirection="row" columnGap={1} flexShrink={1}>
+                      <Text dimColor>{'  ·'}</Text>
+                      <Text dimColor={!pOn} wrap="truncate-end">{p.label}</Text>
+                    </Box>
+                    <Box flexShrink={0}>{pill(`part-${m.name}~${p.key}`, pOn)}</Box>
                   </Box>
                 )
               })
@@ -378,18 +356,18 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column" width={cols} gap="xs">
-        <Box flexDirection="row" justifyContent="space-between" width={cols}>
-          <Text bold size="heading">
-            <Text color={GRADIENT[2]}>{MARK[NAME]} </Text>
-            Mod Switchboard
-          </Text>
-          <Button key="refresh-all" plain dimColor onPress={noop}>
-            Refresh
-          </Button>
+        <Box flexDirection="row" justifyContent="space-between" alignItems="center" width={cols}>
+          <Box flexDirection="column">
+            <Text color={GRADIENT[1]} bold size="caption">SOLOMON MODS</Text>
+            <Text bold size="heading">Mods</Text>
+          </Box>
+          <Box flexDirection="row" columnGap={1} alignItems="center">
+            <Text dimColor>{`${onCount} of ${suite.length} on${partsOff ? ` · ${partsOff} parts off` : ''}`}</Text>
+            <Button key="refresh-all" plain dimColor label="Refresh" onPress={noop} />
+          </Box>
         </Box>
-        <Text dimColor>{`Solomon Mods · ${suite.length} mods · ${onCount} on`}</Text>
         {msg ? <Text color={STATUS.good}>{cut(msg, cols)}</Text> : null}
-        {suite.length ? null : <Text dimColor>No suite mods found yet.</Text>}
+        {suite.length ? null : <Text dimColor>No Solomon mods found yet.</Text>}
         {suite.map(row)}
         {other.length ? (
           <Box marginTop={1}>
@@ -397,8 +375,8 @@ export const register: Register = on => {
           </Box>
         ) : null}
         {other.map(row)}
-        <Text dimColor wrap="wrap">
-          Off means off in every chat. Hidden keeps it working but out of sight. Parts switch one feature of a mod. Changes apply within 3 seconds.
+        <Text dimColor size="caption" wrap="wrap">
+          A switch changes every open chat within 3 seconds. Off stops the mod everywhere; Hidden keeps it working out of sight; each part is one feature of a mod.
         </Text>
       </Box>
     )

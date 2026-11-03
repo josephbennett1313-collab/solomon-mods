@@ -82,7 +82,7 @@
       "name": "mod-switchboard",
       "source": "./mods/mod-switchboard",
       "description": "Mod Switchboard: One Mods tab with an on/off switch for every mod and every part of a mod",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -92,7 +92,7 @@
       "name": "higgs-content",
       "source": "./mods/higgs-content",
       "description": "Higgs Content: A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },

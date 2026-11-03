@@ -22,6 +22,6 @@ export type Row = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'mod-switchboard': { note: string; expanded: string[] }
+    'mod-switchboard': { note: string; collapsed: string[] }
   }
 }
