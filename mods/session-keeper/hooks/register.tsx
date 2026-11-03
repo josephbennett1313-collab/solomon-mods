@@ -23,6 +23,8 @@ const HANDOFF = { plugin: 'session-keeper', key: 'handoff' } as const
 const EXPANDED = { plugin: 'session-keeper', key: 'expanded' } as const
 const NOTE = { plugin: 'session-keeper', key: 'note' } as const
 const WARM_UNTIL = { plugin: 'session-keeper', key: 'warmUntil' } as const
+const MIN = { plugin: 'session-keeper', key: 'min' } as const
+const HIDDEN = { plugin: 'session-keeper', key: 'hidden' } as const
 
 const FIVE_MIN = 5 * 60_000
 const ONE_HOUR = 60 * 60_000
@@ -54,6 +56,7 @@ let editsSinceReview = 0
 let turns = 0
 let offered = false
 let warmTimer: { cancel: () => void } | null = null
+let hist: number[] = [] // context size after each reply, for the little bars
 
 const isPerson = (kind: string) => !BACKGROUND.has(kind)
 
@@ -110,17 +113,25 @@ function costs(b: Bar) {
   }
 }
 
-/** A health grade for the chat, A to F, from how full the context is, the cache and recent errors. */
-function grade(b: Bar): { letter: string; color: string } {
-  let points = 100
-  if (b.percent >= 85) points -= 45
-  else if (b.percent >= 70) points -= 30
-  else if (b.percent >= 50) points -= 15
-  else if (b.percent >= 30) points -= 5
-  if (isCold(b) && b.tokens > 100_000) points -= 15
-  points -= Math.min(20, errorsThisTurn * 5)
-  const letter = points >= 90 ? 'A' : points >= 78 ? 'B' : points >= 65 ? 'C' : points >= 50 ? 'D' : 'F'
-  return { letter, color: letter === 'A' || letter === 'B' ? STATUS.good : letter === 'C' ? STATUS.warn : STATUS.bad }
+/** A quality score for the chat, 0 to 100, with a letter: S 90+, A 80+, B 70+, C 55+, D 40+, F below. */
+function grade(b: Bar): { score: number; letter: string; color: string } {
+  let score = 100 - b.percent * 0.4
+  if (b.percent > 70) score -= (b.percent - 70) * 0.6
+  if (isCold(b) && b.tokens > 150_000) score -= 4
+  score -= Math.min(20, errorsThisTurn * 5)
+  score = Math.max(0, Math.min(100, Math.round(score)))
+  const letter = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : score >= 55 ? 'C' : score >= 40 ? 'D' : 'F'
+  return { score, letter, color: score >= 80 ? STATUS.good : score >= 55 ? STATUS.warn : STATUS.bad }
+}
+
+/** A thin progress ring for the desktop; a dashed ring means cold. */
+function ringSvg(pct: number, color: string, size = 28, dashed = false): string {
+  const r = size / 2 - 3
+  const c = 2 * Math.PI * r
+  const v = Math.max(0, Math.min(100, pct))
+  const mid = size / 2
+  const arc = dashed ? 'stroke-dasharray="2.5 3.5"' : `stroke-dasharray="${((c * v) / 100).toFixed(1)} ${c.toFixed(1)}" stroke-linecap="round" transform="rotate(-90 ${mid} ${mid})"`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke="${color}" stroke-opacity=".2" stroke-width="3"/><circle cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke="${color}" stroke-width="3" ${arc}/></svg>`
 }
 
 const left = (b: Bar) => (b.lastEnd ? b.lastEnd + b.ttlMs - Date.now() : b.ttlMs)
@@ -282,6 +293,8 @@ export const register: Register = on => {
   })
 
   on('command.run', { command: 'keeper' }, async $ => {
+    await $.state.set(HIDDEN, false)
+    await $.state.set(MIN, false)
     await $.state.set(EXPANDED, true)
     await refresh($)
     return { text: 'Session Keeper guide opened above the prompt.' }
@@ -336,6 +349,7 @@ export const register: Register = on => {
       await refresh($)
       if (turns === 1 || turns % 5 === 0) void detectTtl($)
       const { value: b } = await $.state.get(BAR)
+      if (b) hist = [...hist, b.tokens].slice(-8)
       if (b && b.tokens >= OFFER_TOKENS && !offered && (await partOn($, NAME, 'handoff'))) {
         offered = true
         $.ui.toast(`This chat passed ${tokenText(OFFER_TOKENS)} tokens. Session Keeper suggests a handoff.`)
@@ -357,6 +371,8 @@ export const register: Register = on => {
     const { value: open = false } = await $.state.get(EXPANDED)
     const { value: note = '' } = await $.state.get(NOTE)
     const { value: warmUntil = 0 } = await $.state.get(WARM_UNTIL)
+    const min = (await $.state.get(MIN)).value === true
+    const hidden = (await $.state.get(HIDDEN)).value === true
     const showBar = await partOn($, NAME, 'bar')
     const showCrab = await partOn($, NAME, 'fox')
     const showSuggest = await partOn($, NAME, 'suggest')
@@ -462,52 +478,108 @@ export const register: Register = on => {
 
     const nice = (cmd: string) => (cmd === 'keepwarm' ? 'Keep warm' : cmd.charAt(0).toUpperCase() + cmd.slice(1).replace(/-/g, ' '))
 
-    if (showBar) {
-      const cacheColor = cold ? STATUS.bad : mins <= 2 ? STATUS.warn : STATUS.good
-      const cacheText = !b.lastEnd ? 'cache ready' : cold ? 'cache cold' : `cache warm ${mins}m`
-      const sep = <Text dimColor>{' │ '}</Text>
+    if (showBar && !hidden) {
       const gr = grade(b)
+      const COLD = '#60A5FA'
+      const cacheColor = cold ? COLD : mins <= 2 ? STATUS.warn : STATUS.good
       const main = s?.main.command ?? ''
-      mine.push(
-        <Box key="bar" flexDirection="row" alignItems="center" justifyContent="space-between" width={width}>
-          <Box flexDirection="row" alignItems="center" columnGap={1}>
-            {crab('sk-bar')}
-            <Text wrap="truncate-end">
-              <Text color={gr.color} bold>{`${gr.letter} `}</Text>
-              <Text color={cacheColor}>● </Text>
-              <Text color={cacheColor} bold>{cacheText}</Text>
-              {warmUntil > Date.now() ? <Text color={STATUS.info}> · keeping warm</Text> : null}
-              {sep}
-              <Text dimColor>ctx </Text>
-              <Text color={b.percent >= 70 ? STATUS.bad : b.percent >= 50 ? STATUS.warn : undefined}>{tokenText(b.tokens)}</Text>
-              <Text dimColor>{` (${Math.round(b.percent)}%)`}</Text>
-              {sep}
-              <Text dimColor>rewrite ≈ </Text>
-              <Text color={cold ? STATUS.bad : undefined}>{money(c.rewrite)}</Text>
-              {b.fiveHour !== null || b.week !== null ? sep : null}
-              {b.fiveHour !== null ? <Text dimColor>{`5h ${Math.round(b.fiveHour)}%`}</Text> : null}
-              {b.fiveHour !== null && b.week !== null ? <Text dimColor> · </Text> : null}
-              {b.week !== null ? <Text dimColor>{`week ${Math.round(b.week)}%`}</Text> : null}
-              {sep}
-              <Text dimColor>session </Text>
-              <Text>{money(b.sessionUsd)}</Text>
-            </Text>
-          </Box>
-          <Box flexDirection="row" alignItems="center" columnGap={1}>
-            {showSuggest && s ? <Button key="smart" variant="primary" label={nice(s.main.command)} onPress={() => void runCommand($, s.main.command)} /> : null}
-            {main !== 'handoff' ? <Button key="fresh" label="Start fresh" onPress={() => void startHandoff($)} /> : null}
-            {main !== 'keepwarm' ? <Button key="warm" label="Keep warm" onPress={() => void keepWarm($)} /> : null}
-            <Button key="toggle" plain label={open ? '▴' : '▾'} onPress={() => $.state.set(EXPANDED, !open)} />
-          </Box>
-        </Box>,
+      const winTok = b.percent > 0 ? Math.round(b.tokens / (b.percent / 100)) : 0
+      const ctxColor = b.percent >= 80 ? STATUS.bad : b.percent >= 60 ? STATUS.warn : STATUS.good
+      const limColor = (v: number) => (v >= 90 ? STATUS.bad : v >= 75 ? STATUS.warn : STATUS.good)
+      const hide = () => {
+        void $.state.set(HIDDEN, true)
+        try {
+          $.ui.toast('Session Keeper hidden. Type /keeper to bring it back.')
+        } catch {
+          // Only a hint.
+        }
+      }
+      const tail: Record<string, string> = { compact: 'Compacting first makes later messages cheaper.', handoff: 'A fresh chat with a handoff costs a few cents.', keepwarm: 'Keeping it warm costs a few cents a ping.' }
+      const lead = cold ? `Cache is cold. Next message re-reads ${tokenText(b.tokens)} tokens at full price.` : b.lastEnd && mins <= 2 ? `Cache goes cold in ${mins} min.` : ''
+      const headline = `${lead}${lead ? ' ' : ''}${s ? tail[main] ?? s.main.why : 'Looking good.'}`.trim()
+      const ring = (id: string, v: number, color: string, dashed = false) =>
+        desktop ? <ui.Svg key={id} source={ringSvg(v, color, 28, dashed)} alt="" width={28} height={28} /> : <Text color={color}>{v >= 66 ? '◕' : v >= 33 ? '◑' : v > 0 ? '◔' : '○'}</Text>
+      const mark = (key: string, glyph: RenderChildren, value: string, label: string, color?: string) => (
+        <Box key={key} flexDirection="row" columnGap={1} alignItems="center" flexShrink={0}>
+          {glyph}
+          <Text bold size="heading" color={color}>{value}</Text>
+          <Text dimColor>{label}</Text>
+        </Box>
       )
-      if (showSuggest && s && !open) mine.push(
-        <Text key="why" dimColor wrap="truncate-end">
-          <Text dimColor>next: </Text>
-          <Text color={ACCENT} bold>{nice(s.main.command)}</Text>
-          <Text dimColor>{` · ${s.main.why}`}</Text>
-        </Text>,
-      )
+      const smart = showSuggest && s && main !== 'handoff' && main !== 'keepwarm'
+        ? <Button key="smart" variant="primary" label={nice(main)} onPress={() => void runCommand($, main)} />
+        : null
+
+      if (min) {
+        mine.push(
+          <Box key="bar" flexDirection="row" alignItems="center" columnGap={2} width={width}>
+            {crab('sk-bar', 24)}
+            <Text bold color={gr.color}>{`${gr.letter} ${gr.score}`}</Text>
+            <Text color={cacheColor} bold>{cold ? '● cache cold' : `● cache ${b.lastEnd ? `warm ${mins}m` : 'ready'}`}</Text>
+            <Text dimColor>{`ctx ${Math.round(b.percent)}%`}</Text>
+            <Box flexGrow={1} />
+            {smart}
+            <Button key="expand" plain label="+" onPress={() => $.state.set(MIN, false)} />
+          </Box>,
+        )
+      } else {
+        const bars = hist.slice(-6)
+        const hi = Math.max(1, ...bars, b.tokens)
+        const delta = hist.length >= 2 ? hist[hist.length - 1]! - hist[hist.length - 2]! : 0
+        const band = b.percent < 30 ? ['Clear', STATUS.good] : b.percent < 50 ? ['Fine', STATUS.good] : b.percent < 70 ? ['Filling', STATUS.warn] : b.percent < 85 ? ['Heavy', STATUS.bad] : ['Full', STATUS.bad]
+        mine.push(
+          <Box key="bar" flexDirection="column" borderStyle="round" borderColor="#3F3F46" paddingX={1} gap={1}>
+            <Box flexDirection="row" alignItems="center" columnGap={2} width={width - 4}>
+              <Box flexDirection="row" alignItems="center" columnGap={1} flexShrink={0}>
+                {crab('sk-bar', 64)}
+                <Button key="toggle" plain label={open ? '▴' : '▾'} onPress={() => $.state.set(EXPANDED, !open)} />
+                <Button key="min" plain label="−" onPress={() => $.state.set(MIN, true)} />
+              </Box>
+              <Box flexDirection="column" flexGrow={1} flexShrink={1} gap={1}>
+                <Text wrap="wrap">{headline}</Text>
+                <Box flexDirection="row" flexWrap="wrap" columnGap={3}>
+                  <Box key="q" flexDirection="row" columnGap={1} alignItems="center" flexShrink={0}>
+                    <Box borderStyle="round" borderColor={gr.color} paddingX={1}><Text bold color={gr.color}>{gr.letter}</Text></Box>
+                    <Text bold size="heading">{String(gr.score)}</Text>
+                    <Text dimColor>quality</Text>
+                  </Box>
+                  {mark('c', ring('r-ctx', b.percent, ctxColor), `${Math.round(b.percent)}%`, 'context', ctxColor)}
+                  {mark('k', ring('r-cache', cold || !b.lastEnd ? 0 : (ms / b.ttlMs) * 100, cacheColor, cold), cold ? 'cold' : b.lastEnd ? `${mins}m` : 'ready', 'cache', cacheColor)}
+                  {b.fiveHour !== null ? mark('f', ring('r-5h', b.fiveHour, limColor(b.fiveHour)), `${Math.round(b.fiveHour)}%`, '5 hrs', limColor(b.fiveHour)) : null}
+                  {b.week !== null ? mark('w', ring('r-wk', b.week, limColor(b.week)), `${Math.round(b.week)}%`, 'week', limColor(b.week)) : null}
+                </Box>
+              </Box>
+              <Box flexShrink={0}>{smart}</Box>
+            </Box>
+            <Box flexDirection="row" flexWrap="wrap" alignItems="center" columnGap={2}>
+              <Text bold color={band[1]}>{`☀ ${band[0]}`}</Text>
+              <Text>{`${Math.round(b.percent)}% of context`}</Text>
+              <Text dimColor>{winTok ? `${tokenText(b.tokens)} / ${tokenText(winTok)}` : tokenText(b.tokens)}</Text>
+              {bars.length ? <Text dimColor>last turns <Text color="#EAD23C">{bars.map(v => '▁▂▃▄▅▆▇█'[Math.min(7, Math.round((v / hi) * 7))]!).join('')}</Text></Text> : null}
+              {hist.length >= 2 ? <Text dimColor>{`${delta >= 0 ? '▲ +' : '▼ −'}${Math.abs(delta).toLocaleString('en-US')} last turn`}</Text> : null}
+              <Text dimColor>{'│'}</Text>
+              <Text dimColor>rewrite ≈ <Text color={cold ? STATUS.bad : undefined}>{money(c.rewrite)}</Text></Text>
+              <Text dimColor>session <Text>{money(b.sessionUsd)}</Text></Text>
+            </Box>
+            <Box flexDirection="row" flexWrap="wrap" alignItems="center" justifyContent="space-between" columnGap={2}>
+              <Box flexShrink={1}>
+                <Text wrap="wrap">
+                  <Text color={cacheColor}>{cold ? '⧗ ' : '⧖ '}</Text>
+                  {cold
+                    ? <Text><Text color={COLD} bold>Cache cold</Text><Text dimColor>{` since ${ago(Math.round(-ms / 60_000))} ago. Your next message re-reads ${tokenText(b.tokens)} at full price.`}</Text></Text>
+                    : <Text><Text color={cacheColor} bold>{b.lastEnd ? `Cache warm, ${mins} min left.` : 'Cache ready.'}</Text><Text dimColor>{` A message now costs about ${money(c.warm)}.`}</Text></Text>}
+                  {warmUntil > Date.now() ? <Text color={STATUS.info}> · keeping warm</Text> : null}
+                </Text>
+              </Box>
+              <Box flexDirection="row" columnGap={1} flexShrink={0}>
+                <Button key="fresh" variant={main === 'handoff' ? 'primary' : undefined} label="Hand off to a fresh chat" onPress={() => void startHandoff($)} />
+                <Button key="warm" label="Keep warm" onPress={() => void keepWarm($)} />
+                <Button key="hide" label="Hide" onPress={hide} />
+              </Box>
+            </Box>
+          </Box>,
+        )
+      }
     }
 
     if (open) {

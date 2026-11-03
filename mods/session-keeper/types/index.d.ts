@@ -44,6 +44,8 @@ declare module 'claude-code' {
       expanded: boolean
       note: string
       warmUntil: number
+      min: boolean
+      hidden: boolean
     }
   }
 }

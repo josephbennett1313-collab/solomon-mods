@@ -6,7 +6,11 @@
 //   because it runs many helpers at once).
 // - Changing model makes Claude read the whole chat again at full price. When the chat is long and
 //   the cache is warm, Auto Model runs /compact first, so the new model reads a short summary.
-// - A chip above the prompt shows the pick and the reason. /automodel shows it in words.
+// - How it switches: the engine will not run /model, /effort or /compact from inside the prompt
+//   hook, so a prompt that needs a new model is held for a moment, the settings are changed, and then
+//   your message is sent again by itself. A prompt that needs no switch goes straight through.
+// - A chip above the prompt shows the pick, with ON/OFF, Fast and Ultracode switches. /automodel
+//   shows it in words.
 // The idea is credited in SOURCES.md.
 
 import type { EngineInterface, Register } from 'claude-code'
@@ -32,11 +36,13 @@ const PLAN: Record<Tier, { model: string; effort: Effort; label: string }> = {
 }
 
 let sid = ''
-let current = ''
+let current = '' // the model this chat's requests use
 let effort: Effort | '' = ''
+let sessionModel = '' // what the app's own model picker shows
+let sessionEffort = ''
 let fastOn = false
 let lastEnd = 0
-let appliedEffort = ''
+let resend = '' // the message Auto Model put back itself: it passes straight through
 
 const log = ($: EngineInterface, line: string) => suiteLog($, NAME, line)
 
@@ -79,29 +85,26 @@ async function isWarm($: EngineInterface) {
   return (await $.clock.now()) - lastEnd < FIVE_MIN
 }
 
-async function setFast($: EngineInterface, on: boolean) {
-  if (fastOn === on) return
-  try {
-    await $.command.run({ command: 'fast', args: on ? 'on' : 'off' })
-    fastOn = on
-  } catch (err) {
-    await log($, `fast ${on}: ${String(err)}`)
-  }
-}
-
-/** Runs /model or /effort, so the app's own model and effort change before Claude answers. */
-async function applySetting($: EngineInterface, command: 'model' | 'effort', args: string) {
+/** Runs one of Claude Code's own commands. Only call it from a later event, never inside prompt.submit. */
+async function run($: EngineInterface, command: string, args: string) {
   try {
     await $.command.run({ command, args })
+    return true
   } catch (err) {
-    await log($, `${command} ${args}: ${String(err)}`)
+    await log($, `/${command} ${args}: ${String(err)}`)
+    return false
   }
 }
 
-/** The ON/OFF switch on the chip: writes the same switch /mods uses. */
-async function togglePart($: EngineInterface, part: 'fast' | 'ultracode', byDefault: boolean) {
+async function setFast($: EngineInterface, on: boolean) {
+  if (fastOn === on) return
+  if (await run($, 'fast', on ? 'on' : 'off')) fastOn = on
+}
+
+/** The switches on the chip: the same ones /mods writes. */
+async function togglePart($: EngineInterface, part: 'fast' | 'ultracode') {
   const json = await readSwitches($, true)
-  const now = !isPartOn(json, NAME, part, byDefault)
+  const now = !isPartOn(json, NAME, part)
   await writeSwitches($, { ...json, [`${NAME}:${part}`]: now })
   if (!now && part === 'fast') await setFast($, false)
 }
@@ -115,52 +118,72 @@ async function toggle($: EngineInterface, value: boolean) {
   }
 }
 
-/** Decides the settings for this prompt and returns the text to send (ultracode may be added). */
-async function choose($: EngineInterface, text: string): Promise<string> {
+type Plan = { text: string; model: string; eff: Effort | ''; fast: boolean; ultra: boolean; tier: Tier; why: string; compact: boolean; switching: boolean }
+
+/** Reads the prompt and decides the settings for it. Changes nothing. */
+async function planFor($: EngineInterface, text: string): Promise<Plan> {
   const tier = tierOf(text)
-  const plan = PLAN[tier]
+  const base = PLAN[tier]
   const useModel = await partOn($, NAME, 'model')
   const useEffort = await partOn($, NAME, 'effort')
-  let model = useModel ? (FABLE_RE.test(text) ? MODELS.fable : plan.model) : ''
-  let eff: Effort | '' = useEffort ? (MAX_RE.test(text) ? 'max' : plan.effort) : ''
+  let model = useModel ? (FABLE_RE.test(text) ? MODELS.fable : base.model) : ''
+  let eff: Effort | '' = useEffort ? (MAX_RE.test(text) ? 'max' : base.effort) : ''
   const fast = tier === 'urgent' && (await partOn($, NAME, 'fast'))
-  const ultra = BIG_CODE_RE.test(text) && !/\bultracode\b/i.test(text) && (await partOn($, NAME, 'ultracode'))
-  const before = current || (await $.session.model().catch(() => ''))
-  let compacted = false
-  let why = `${plan.label}`
-  if (model && friendly(model) !== friendly(before) && before) {
-    const u = await $.session.usage().catch(() => null)
-    const tokens = u?.context.tokens ?? 0
-    if (tokens > COMPACT_OVER && (await isWarm($))) {
-      if (await partOn($, NAME, 'compact')) {
-        const r = await $.session.compact({ instructions: 'Keep every decision, open task, file path and next step. The next prompt switches model.' }).catch(async err => (await log($, `compact: ${String(err)}`), null))
-        compacted = !!r && !('skip' in r && r.skip)
-        why += compacted ? ` · compacted ${tokenText(tokens)} tokens first so the switch is cheap` : ''
-      }
-      if (!compacted && tokens > 150_000) {
-        why += ` · kept ${friendly(before)}: switching now would re-read ${tokenText(tokens)} tokens. Run /compact to switch`
-        model = ''
-      } else if (!compacted) {
-        why += ` · switched without compacting (${tokenText(tokens)} tokens read once)`
-      }
-    }
-  }
   if (fast) {
     model = MODELS.opus
     if (eff === 'xhigh' || eff === 'max') eff = 'high'
   }
-  await setFast($, fast)
-  if (model && friendly(model) !== friendly(before)) await applySetting($, 'model', model)
-  if (eff && eff !== appliedEffort) {
-    await applySetting($, 'effort', eff)
-    appliedEffort = eff
+  const ultra = BIG_CODE_RE.test(text) && !/\bultracode\b/i.test(text) && (await partOn($, NAME, 'ultracode'))
+  const before = sessionModel || (await $.session.model().catch(() => ''))
+  if (before && !sessionModel) sessionModel = before
+  const switching = !!model && !!before && friendly(model) !== friendly(before)
+  let why = base.label
+  let compact = false
+  if (switching) {
+    const u = await $.session.usage().catch(() => null)
+    const tokens = u?.context.tokens ?? 0
+    if (tokens > COMPACT_OVER) {
+      if (await isWarm($)) {
+        compact = await partOn($, NAME, 'compact')
+        why += compact ? ` · compacting ${tokenText(tokens)} tokens first so the switch is cheap` : ` · switching with ${tokenText(tokens)} tokens read once`
+      } else {
+        why += ' · the cache is cold, so switching costs nothing extra'
+      }
+    }
   }
-  current = model || current
-  effort = eff
-  const pick: Pick = { model: current || before, effort: (eff || 'medium') as Effort, fast, ultracode: ultra, tier, why, compacted, at: Date.now() }
+  return { text: ultra ? `${text}\n\nultracode` : text, model, eff, fast, ultra, tier, why, compact, switching }
+}
+
+async function record($: EngineInterface, p: Plan) {
+  current = p.model || current
+  effort = p.eff
+  const pick: Pick = { model: current || sessionModel, effort: (p.eff || 'medium') as Effort, fast: p.fast, ultracode: p.ultra, tier: p.tier, why: p.why, compacted: p.compact, at: Date.now() }
   await $.state.set(PICK, pick)
-  await log($, `${sid.slice(0, 8)} ${tier}: ${friendly(pick.model)} · ${pick.effort}${fast ? ' · fast' : ''}${ultra ? ' · ultracode' : ''} (${why})`)
-  return ultra ? `${text}\n\nultracode` : text
+  await log($, `${sid.slice(0, 8)} ${p.tier}: ${friendly(pick.model)} · ${pick.effort}${p.fast ? ' · fast' : ''}${p.ultra ? ' · ultracode' : ''} (${p.why})`)
+}
+
+/** Runs later, outside the prompt hook: compact, switch model, effort and Fast, then send the message again. */
+async function applyThenSend($: EngineInterface, p: Plan) {
+  try {
+    if (p.compact) {
+      const r = await $.session.compact({ instructions: 'Keep every decision, open task, file path and next step. The next prompt switches model.' }).catch(async err => (await log($, `compact: ${String(err)}`), null))
+      if (!r) p.why += ' · compact did not run'
+    }
+    if (p.fast !== fastOn) await setFast($, p.fast)
+    if (p.model && friendly(p.model) !== friendly(sessionModel)) {
+      await run($, 'model', p.model)
+      sessionModel = p.model // set even if the command failed, so one failure cannot loop; the request still uses it
+    }
+    if (p.eff && p.eff !== sessionEffort) {
+      await run($, 'effort', p.eff)
+      sessionEffort = p.eff
+    }
+  } catch (err) {
+    await log($, `apply: ${String(err)}`)
+  }
+  await record($, p)
+  resend = p.text
+  await $.prompt.submit({ text: p.text, asUser: true })
 }
 
 export const register: Register = on => {
@@ -169,7 +192,9 @@ export const register: Register = on => {
     sid = await $.session.id().catch(() => '')
     current = ''
     effort = ''
-    appliedEffort = ''
+    sessionEffort = ''
+    resend = ''
+    sessionModel = await $.session.model().catch(() => '')
     lastEnd = 0
     await $.command.register({ name: 'automodel', description: 'Auto Model: what it picked for the last prompt and why' })
     return r
@@ -178,8 +203,30 @@ export const register: Register = on => {
   on('prompt.submit', async ($, e, next) => {
     const person = e.origin.kind === 'composer' || e.origin.kind === 'bridge' || e.origin.kind === 'sdk'
     if (!person || e.command || e.isMeta || !(await partOn($, NAME))) return next(e)
-    const text = await choose($, e.text).catch(async err => (await log($, `choose: ${String(err)}`), e.text))
-    return next(text === e.text ? e : { ...e, text })
+    if (resend && e.text === resend) {
+      resend = ''
+      return next(e)
+    }
+    let p: Plan
+    try {
+      p = await planFor($, e.text)
+    } catch (err) {
+      await log($, `plan: ${String(err)}`)
+      return next(e)
+    }
+    // A new model (or Fast mode) has to be set before Claude answers, and the engine only allows that
+    // outside this hook: hold the message, change the settings, send it again.
+    if (p.switching || p.fast !== fastOn) {
+      try {
+        $.ui.toast(`◆ Auto Model: ${friendly(p.model || sessionModel)}${p.eff ? `, ${p.eff} effort` : ''}${p.compact ? ', compacting first' : ''}`)
+      } catch {
+        // Only a hint.
+      }
+      $.clock.after(1, () => void applyThenSend($, p).catch(err => log($, `send: ${String(err)}`)))
+      return { drop: `Auto Model is switching to ${friendly(p.model || sessionModel)}${p.compact ? ' after compacting' : ''}, then sends your message.` }
+    }
+    await record($, p)
+    return next(p.text === e.text ? e : { ...e, text: p.text })
   }).catch(($, e, next) => next(e))
 
   // Every request of the main chat uses the picked model and effort. Helpers keep their own.
@@ -188,11 +235,16 @@ export const register: Register = on => {
     return yield* next({ ...e, ...(current ? { model: current } : {}), ...(effort ? { effort } : {}) })
   })
 
+  // Once a reply ends it is safe to run commands: bring the app's effort picker in line, and Fast mode back off.
   on('turn.complete', async ($, e, next) => {
     const r = await next(e)
     if (e.agentId === undefined) {
       lastEnd = await $.clock.now()
       if (fastOn) await setFast($, false)
+      if (effort && effort !== sessionEffort) {
+        await run($, 'effort', effort)
+        sessionEffort = effort
+      }
     }
     return r
   })
@@ -218,17 +270,19 @@ export const register: Register = on => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const effortColor = p ? { low: STATUS.good, medium: STATUS.info, high: STATUS.warn, xhigh: ACCENT, max: STATUS.bad }[p.effort] : undefined
     const live = isOn && p
-    const fastOn = isPartOn(json, NAME, 'fast')
-    const ultraOn = isPartOn(json, NAME, 'ultracode')
+    const fastOk = isPartOn(json, NAME, 'fast')
+    const ultraOk = isPartOn(json, NAME, 'ultracode')
     const chip = (
-      <Box key="am" flexDirection="row" columnGap={1} alignItems="center">
-        <Text bold>Auto Model</Text>
-        <Button key="am-toggle" variant={isOn ? 'primary' : undefined} label={isOn ? 'ON' : 'OFF'} onPress={() => toggle($, !isOn)} />
-        {live ? <Text bold color={colorOf(p.model)}>{`● ${friendly(p.model)} ✓`}</Text> : null}
-        {live ? <Text color={effortColor}>{`${p.effort} effort`}</Text> : null}
-        {isOn ? <Button key="am-fast" variant={fastOn ? 'primary' : undefined} label={`⚡ Fast ${live && p.fast ? 'ON' : fastOn ? 'auto' : 'OFF'}`} onPress={() => togglePart($, 'fast', true)} /> : null}
-        {isOn ? <Button key="am-ultra" variant={ultraOn ? 'primary' : undefined} label={`Ultracode ${live && p.ultracode ? 'ON' : ultraOn ? 'auto' : 'OFF'}`} onPress={() => togglePart($, 'ultracode', true)} /> : null}
-        <Text dimColor wrap="truncate-end">{isOn ? (p ? `· ${p.why}` : '· sets the model, effort and Fast mode each time you send') : '· off: your own model stays as set'}</Text>
+      <Box key="am" flexDirection="column">
+        <Box flexDirection="row" flexWrap="wrap" columnGap={1} alignItems="center">
+          <Box flexShrink={0}><Text bold>Auto Model</Text></Box>
+          <Box flexShrink={0}><Button key="am-toggle" variant={isOn ? 'primary' : undefined} label={isOn ? 'ON' : 'OFF'} onPress={() => toggle($, !isOn)} /></Box>
+          {live ? <Box flexShrink={0}><Text bold color={colorOf(p.model)}>{`● ${friendly(p.model)} ✓`}</Text></Box> : null}
+          {live ? <Box flexShrink={0}><Text color={effortColor}>{`${p.effort} effort`}</Text></Box> : null}
+          {isOn ? <Box flexShrink={0}><Button key="am-fast" variant={live && p.fast ? 'primary' : undefined} label={`⚡ Fast${live && p.fast ? ' ON' : fastOk ? '' : ' off'}`} onPress={() => togglePart($, 'fast')} /></Box> : null}
+          {isOn ? <Box flexShrink={0}><Button key="am-ultra" variant={live && p.ultracode ? 'primary' : undefined} label={`Ultracode${live && p.ultracode ? ' ON' : ultraOk ? '' : ' off'}`} onPress={() => togglePart($, 'ultracode')} /></Box> : null}
+        </Box>
+        <Text dimColor wrap="truncate-end">{isOn ? (p ? p.why : 'Sets the model, effort, Fast and ultracode each time you send.') : 'Off: your own model stays as set.'}</Text>
       </Box>
     )
     return roomy(<Box flexDirection="column">{rest}{chip}</Box>, e.surface)
