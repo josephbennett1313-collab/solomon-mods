@@ -1,6 +1,6 @@
 {
   "name": "rule-keeper",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Rule Keeper: Spots lasting rules you give Claude and saves the ones you approve to your Obsidian vault, plus pins above the prompt",
   "author": {
     "name": "Joseph Bennett"

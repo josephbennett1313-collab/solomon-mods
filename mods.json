@@ -1,6 +1,7 @@
 [
   {
     "name": "session-keeper",
+    "version": "2.2.1",
     "title": "Session Keeper",
     "what": "A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
     "command": "/keeper · /handoff · /keepwarm",
@@ -34,7 +35,7 @@
   },
   {
     "name": "mission-control",
-    "version": "2.0.1",
+    "version": "2.1.1",
     "title": "Mission Control",
     "what": "A goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
     "command": "/mission · /alltasks (and Claude Code's /goal)",
@@ -77,6 +78,7 @@
   },
   {
     "name": "helper-desk",
+    "version": "2.2.0",
     "title": "Helper Desk",
     "what": "A Helper Desk tab with a crab card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
     "command": "/helpers · /team",
@@ -102,6 +104,7 @@
   },
   {
     "name": "collision-guard",
+    "version": "2.1.1",
     "title": "Collision Guard",
     "what": "Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
     "command": "/collisions",
@@ -119,6 +122,7 @@
   },
   {
     "name": "prompt-forge",
+    "version": "2.1.1",
     "title": "Prompt Forge",
     "what": "Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
     "command": "/forge · /after · /shape · /coach",
@@ -140,6 +144,7 @@
   },
   {
     "name": "rule-keeper",
+    "version": "2.1.0",
     "title": "Rule Keeper",
     "what": "Spots lasting rules you give Claude and saves the ones you approve to your Obsidian vault, plus pins above the prompt",
     "command": "/pin · /reflect",
@@ -161,6 +166,7 @@
   },
   {
     "name": "session-ledger",
+    "version": "2.1.0",
     "title": "Session Ledger",
     "what": "In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
     "command": "/ledger · /report",
@@ -178,6 +184,7 @@
   },
   {
     "name": "mod-switchboard",
+    "version": "2.1.1",
     "title": "Mod Switchboard",
     "what": "One Mods tab with an on/off switch for every mod and every part of a mod",
     "command": "/mods",
@@ -186,6 +193,7 @@
   },
   {
     "name": "higgs-content",
+    "version": "2.1.1",
     "title": "Higgs Content",
     "what": "A photo and video studio on the Higgsfield connector: describe, review the upgraded prompt and credit cost, create, and browse the gallery",
     "command": "/create",
@@ -203,6 +211,7 @@
   },
   {
     "name": "auto-model",
+    "version": "2.2.0",
     "title": "Auto Model",
     "what": "Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
     "command": "/automodel",
@@ -236,6 +245,7 @@
   },
   {
     "name": "file-tree",
+    "version": "2.2.0",
     "title": "File Tree",
     "what": "A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
     "command": "/files",
@@ -253,6 +263,7 @@
   },
   {
     "name": "design-picker",
+    "version": "2.1.1",
     "title": "Design Picker",
     "what": "Opens by itself on design questions: live mockup cards built with design skills, with motion, and a Send to Figma step",
     "command": "/styles",
@@ -274,6 +285,7 @@
   },
   {
     "name": "idea-shelf",
+    "version": "2.1.0",
     "title": "Idea Shelf",
     "what": "Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
     "command": "/shelf · /idea",
@@ -287,6 +299,7 @@
   },
   {
     "name": "edit-rewind",
+    "version": "2.1.0",
     "title": "Edit Rewind",
     "what": "Step through a turn's edits, undo a turn, and restore from a snapshot timeline",
     "command": "/rewind-edits · /tm",
@@ -305,6 +318,7 @@
   },
   {
     "name": "privacy-shield",
+    "version": "2.1.0",
     "title": "Privacy Shield",
     "what": "Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
     "command": "/screen-share",
@@ -330,6 +344,7 @@
   },
   {
     "name": "assumption-radar",
+    "version": "2.1.0",
     "title": "Assumption Radar",
     "what": "Lists decisions Claude made without asking so you can mark each right or wrong",
     "command": "/assumptions",
@@ -338,6 +353,7 @@
   },
   {
     "name": "command-guard",
+    "version": "2.1.1",
     "title": "Command Guard",
     "what": "Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
     "command": "/guard",
@@ -346,6 +362,7 @@
   },
   {
     "name": "limit-guard",
+    "version": "2.1.1",
     "title": "Limit Guard",
     "what": "Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
     "command": "/limits",
@@ -367,14 +384,16 @@
   },
   {
     "name": "voice-guard",
+    "version": "2.1.1",
     "title": "Voice Guard",
     "what": "Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
-    "command": "/voice",
+    "command": "/voiceguard",
     "pane": false,
     "parts": []
   },
   {
     "name": "site-check",
+    "version": "2.1.0",
     "title": "Site Check",
     "what": "/sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes",
     "command": "/sitecheck",

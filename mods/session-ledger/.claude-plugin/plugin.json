@@ -1,6 +1,6 @@
 {
   "name": "session-ledger",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Session Ledger: In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
   "author": {
     "name": "Joseph Bennett"

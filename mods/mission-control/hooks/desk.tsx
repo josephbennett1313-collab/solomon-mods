@@ -567,11 +567,11 @@ const NUDGE_AFTER = 1
 // Tool calls since the last plan update before the nudge to tick it.
 const STALE_AFTER = 8
 const NUDGE_NEW =
-  'Mission Control: you have no plan for this task yet. Call mcp__mission-control__plan now with every step in order, so the user sees your progress.'
+  'Mission Control: you have no plan for this task yet. Send every step in order to the task list you use (the app\'s own plan tool, TodoWrite, or mcp__mission-control__plan), so the user sees your progress.'
 const NUDGE_CONT =
-  'Mission Control: the plan has not changed this turn. If this is a new task, call mcp__mission-control__plan with its steps. If it carries on the last one, send the updated list.'
+  'Mission Control: the plan has not changed this turn. If this is a new task, send its steps to the task list you use (the app\'s own plan tool, TodoWrite, or mcp__mission-control__plan). If it carries on the last one, send the updated list.'
 const NUDGE_STALE =
-  'Mission Control: the plan has not changed in a while. If a step finished, call mcp__mission-control__plan with the full list now.'
+  'Mission Control: the plan has not changed in a while. If a step finished, update the task list you use (the app\'s own plan tool, TodoWrite, or mcp__mission-control__plan) now.'
 const STATUSES: readonly PlanStatus[] = ['pending', 'in_progress', 'completed']
 const SHIMMER_MS = 350
 // How long a finished plan stays at 100% before the band goes away.

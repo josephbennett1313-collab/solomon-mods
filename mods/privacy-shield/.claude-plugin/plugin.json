@@ -1,6 +1,6 @@
 {
   "name": "privacy-shield",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Privacy Shield: Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
   "author": {
     "name": "Joseph Bennett"

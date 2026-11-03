@@ -59,7 +59,7 @@ Start with **Mod Switchboard** (`/mods`): it gives every mod, and every part of 
 | 16 | **Assumption Radar** | Lists decisions Claude made without asking so you can mark each right or wrong | /assumptions |
 | 17 | **Command Guard** | Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed | /guard |
 | 18 | **Limit Guard** | Stops runaway helpers, huge prompts and retry loops before they burn your plan limits | /limits |
-| 19 | **Voice Guard** | Flags AI-sounding phrases in posts and emails Claude writes, before they go out | /voice |
+| 19 | **Voice Guard** | Flags AI-sounding phrases in posts and emails Claude writes, before they go out | /voiceguard |
 | 20 | **Site Check** | /sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes | /sitecheck |
 
 Also worth knowing: Claude Code now has a built-in **"You should know"** tip, so it is not a separate mod here.

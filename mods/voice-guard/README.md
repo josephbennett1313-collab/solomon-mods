@@ -13,7 +13,7 @@ Part of [Solomon Mods](https://github.com/josephbennett1313-collab/solomon-mods)
 
 ## Use
 
-Commands: /voice.
+Commands: /voiceguard.
 It shows above the prompt or acts in the background.
 Turn it, or any part of it, on or off from the Mods tab (`/mods`).
 

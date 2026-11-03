@@ -12,7 +12,7 @@
       "name": "session-keeper",
       "source": "./mods/session-keeper",
       "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
-      "version": "2.2.0",
+      "version": "2.2.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -22,7 +22,7 @@
       "name": "mission-control",
       "source": "./mods/mission-control",
       "description": "Mission Control: A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -42,7 +42,7 @@
       "name": "collision-guard",
       "source": "./mods/collision-guard",
       "description": "Collision Guard: Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -172,7 +172,7 @@
       "name": "command-guard",
       "source": "./mods/command-guard",
       "description": "Command Guard: Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -182,7 +182,7 @@
       "name": "limit-guard",
       "source": "./mods/limit-guard",
       "description": "Limit Guard: Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -192,7 +192,7 @@
       "name": "voice-guard",
       "source": "./mods/voice-guard",
       "description": "Voice Guard: Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },

@@ -353,7 +353,7 @@ export const register: Register = on => {
     const b = (await $.state.get(BAR)).value ?? emptyBar()
     const { value: s } = await $.state.get(SUGGEST)
     const { value: hold } = await $.state.get(HOLD)
-    const { value: h } = await $.state.get(HANDOFF)
+    const { value: ho } = await $.state.get(HANDOFF)
     const { value: open = false } = await $.state.get(EXPANDED)
     const { value: note = '' } = await $.state.get(NOTE)
     const { value: warmUntil = 0 } = await $.state.get(WARM_UNTIL)
@@ -441,23 +441,23 @@ export const register: Register = on => {
       )
     }
 
-    if (h) {
+    if (ho) {
       const devices: Device[] = ['Mac mini', 'MacBook', 'iPhone']
       const body: RenderChildren[] = []
-      if (h.phase === 'pick') body.push(
+      if (ho.phase === 'pick') body.push(
         <Box key="devs" flexDirection="row" columnGap={1}>
           {devices.map(d => <Button key={`dev-${d}`} variant={d === 'Mac mini' ? 'primary' : undefined} label={d} onPress={() => void writeHandoff($, d)} />)}
           <Button key="ho-cancel" plain dimColor role="dismiss" label="Cancel" onPress={() => $.state.set(HANDOFF, null)} />
         </Box>,
       )
-      if (h.phase === 'ready') body.push(
+      if (ho.phase === 'ready') body.push(
         <Box key="go" flexDirection="row" columnGap={1}>
-          <Button key="ho-go" variant="primary" label={h.device === 'Mac mini' ? 'Start the fresh chat' : 'Copy handoff'} onPress={() => void finishHandoff($, e.surface)} />
+          <Button key="ho-go" variant="primary" label={ho.device === 'Mac mini' ? 'Start the fresh chat' : 'Copy handoff'} onPress={() => void finishHandoff($, e.surface)} />
           <Button key="ho-close" plain dimColor role="dismiss" label="Close" onPress={() => $.state.set(HANDOFF, null)} />
         </Box>,
       )
-      if (h.phase === 'failed') body.push(<Button key="ho-retry" label="Try again" onPress={() => void startHandoff($)} />)
-      mine.push(card('handoff', 'Handoff', h.phase === 'pick' ? 'Where will you pick this up? The handoff is written for that device.' : h.note, body))
+      if (ho.phase === 'failed') body.push(<Button key="ho-retry" label="Try again" onPress={() => void startHandoff($)} />)
+      mine.push(card('handoff', 'Handoff', ho.phase === 'pick' ? 'Where will you pick this up? The handoff is written for that device.' : ho.note, body))
     }
 
     const nice = (cmd: string) => (cmd === 'keepwarm' ? 'Keep warm' : cmd.charAt(0).toUpperCase() + cmd.slice(1).replace(/-/g, ' '))

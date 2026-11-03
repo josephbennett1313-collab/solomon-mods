@@ -91,7 +91,7 @@ export const register: Register = on => {
     const o = others(await ledger($), path, Date.now())[0]
     if (o && !allowed.has(path) && (await partOn($, NAME, 'ask'))) {
       const mins = Math.max(1, Math.round((Date.now() - o.at) / 60_000))
-      const pick = await $.ui.ask(`Another chat (${o.where}) edited ${short(path)} ${mins} min ago. If both chats keep editing it, one can overwrite the other. What now?`, ['Proceed', 'Move to a worktree', 'Cancel'])
+      const pick = await $.ui.ask(`Another chat (${o.where}) edited ${short(path)} ${mins} min ago. If both chats keep editing it, one can overwrite the other. What now?`, ['Proceed', 'Move to a worktree', 'Cancel']).catch(() => 'Cancel')
       if (pick === 'Move to a worktree') {
         return { deny: `Collision Guard: another open chat is editing ${path}. Joseph chose to move this work to a git worktree. Create one (EnterWorktree, or git worktree add), then make this edit there.` }
       }
