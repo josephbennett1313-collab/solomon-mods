@@ -1,7 +1,7 @@
 {
   "name": "session-keeper",
-  "version": "2.3.0",
-  "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
+  "version": "2.4.0",
+  "description": "Session Keeper: One panel above the prompt: crab that snows when the cache is cold, quality/context/cache/limit rings, token weather, chat facts, cache buttons, Auto Model with fast mode and Ultracode buttons, a hold on cold-cache messages, and a device-aware handoff",
   "author": {
     "name": "Joseph Bennett"
   },

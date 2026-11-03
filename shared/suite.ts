@@ -406,6 +406,165 @@ export function crabSvg(size = 28, color: string = ACCENT, opts: { still?: boole
 /** The terminal's crab. */
 export const crabGlyph = (_tick = 0) => '🦀'
 
+// ---------- The crab in its little scene: room above it for snow when the cache goes cold ----------
+
+const ICE = '#7DB4EE'
+const SNOW = '#FFFFFF'
+const SCENE_W = 24
+const SCENE_H = 19
+
+/** Fixed flakes (x, size, seconds to fall, start offset, drift): the same picture every redraw, so it never blinks. */
+const FLAKES: [x: number, big: boolean, dur: number, delay: number, drift: number][] = [
+  [2, true, 3.4, 0.0, 1], [20, true, 3.9, 1.2, -1], [11, false, 2.8, 0.6, 1], [6, false, 3.1, 2.0, -1],
+  [16, true, 4.2, 2.6, 1], [22, false, 2.6, 0.3, -1], [1, false, 3.6, 1.7, 1], [13, true, 3.3, 3.0, -1],
+  [8, true, 4.0, 0.9, 1], [18, false, 2.9, 2.3, 1], [4, false, 3.8, 3.4, -1], [15, false, 3.0, 1.4, -1],
+  [10, true, 3.7, 2.8, 1], [21, true, 3.2, 0.5, 1], [3, true, 4.4, 2.1, -1], [12, false, 2.7, 3.7, 1],
+]
+
+/**
+ * The crab in a 24 by 19 scene, drawn `width` pixels wide. Warm, it hops, blinks and waves.
+ * `cold` 1 to 3 is light, steady or heavy snow: flakes fall around it, its shell frosts over,
+ * it shivers, and at 3 snow settles on its back and on the ground. The box is the same size warm
+ * or cold, so nothing beside it moves when the weather changes.
+ */
+export function crabSceneSvg(width = 72, color: string = ACCENT, opts: { cold?: number; id?: string } = {}): string {
+  const id = opts.id ?? 'cs'
+  const cold = Math.max(0, Math.min(3, Math.round(opts.cold ?? 0)))
+  const h = Math.round((width * SCENE_H) / SCENE_W)
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${h}" viewBox="0 0 ${SCENE_W} ${SCENE_H}" shape-rendering="crispEdges">`
+  const body = cold ? mix(color, ICE, 0.22 + 0.13 * cold) : color
+  const frameList = cold ? [0, 2] : [0, 1, 2, 3]
+  const cycle = cold ? 3.2 : 1.6
+  const frames = frameList.map((f, i) => `<g class="${id}-f ${id}-f${i}">${crabRects(f, body)}</g>`).join('')
+  // Snow on its back and on the ground once it has been cold a long while.
+  const px = (x: number, y: number, c: string) => `<rect x="${x}" y="${y}" width="1" height="1" fill="${c}"/>`
+  const cap = cold >= 3 ? [5, 6, 7, 8, 9, 10, 11, 12].map((x, i) => px(x + 3, 7, i % 3 === 1 ? ICE : SNOW)).join('') : ''
+  const ground = cold >= 2 ? Array.from({ length: SCENE_W }, (_, x) => px(x, SCENE_H - 1, (x * 7) % 5 === 0 ? ICE : SNOW)).join('') : ''
+  const count = cold === 0 ? 0 : cold === 1 ? 6 : cold === 2 ? 10 : FLAKES.length
+  const flakes = FLAKES.slice(0, count)
+    .map(([x, big], i) =>
+      big
+        ? `<g class="${id}-s ${id}-s${i}">${px(x, 0, SNOW)}${px(x - 1, 0, ICE)}${px(x + 1, 0, ICE)}${px(x, -1, ICE)}${px(x, 1, ICE)}</g>`
+        : `<g class="${id}-s ${id}-s${i}">${px(x, 0, i % 2 ? ICE : SNOW)}</g>`,
+    )
+    .join('')
+  const step = 1 / frameList.length
+  const css = [
+    `.${id}-f{opacity:0;animation:${id}-a ${cycle}s step-end infinite}`,
+    ...frameList.map((_, i) => `.${id}-f${i}{animation-delay:${((i * cycle) / frameList.length).toFixed(2)}s}`),
+    `@keyframes ${id}-a{0%{opacity:1}${(step * 100).toFixed(1)}%{opacity:0}100%{opacity:0}}`,
+    cold ? `.${id}-c{animation:${id}-sh 2.8s linear infinite}@keyframes ${id}-sh{0%,84%,100%{transform:translate(3px,5px)}86%,90%,94%{transform:translate(2.5px,5px)}88%,92%,96%{transform:translate(3.5px,5px)}}` : '',
+    count ? `.${id}-s{animation-timing-function:linear;animation-iteration-count:infinite}` : '',
+    ...FLAKES.slice(0, count).map(([, , dur, delay, drift], i) => `.${id}-s${i}{animation-name:${id}-${drift > 0 ? 'r' : 'l'};animation-duration:${dur}s;animation-delay:-${delay}s}`),
+    count ? `@keyframes ${id}-r{0%{transform:translate(0,-2px);opacity:0}12%{opacity:1}80%{opacity:1}100%{transform:translate(2px,${SCENE_H}px);opacity:0}}` : '',
+    count ? `@keyframes ${id}-l{0%{transform:translate(0,-2px);opacity:0}12%{opacity:1}80%{opacity:1}100%{transform:translate(-2px,${SCENE_H}px);opacity:0}}` : '',
+    `@media (prefers-reduced-motion: reduce){.${id}-f,.${id}-c,.${id}-s{animation:none}.${id}-f0{opacity:1}.${id}-s{transform:translate(0,6px)}}`,
+  ].join('')
+  return `${head}<style>${css}</style>${ground}<g class="${id}-c" transform="translate(3,5)">${frames}</g>${cap}${flakes}</svg>`
+}
+
+/** How cold the crab is: 0 warm, 1 cold under an hour, 2 cold for hours, 3 cold since yesterday. */
+export const coldLevel = (coldMinutes: number) => (coldMinutes <= 0 ? 0 : coldMinutes < 60 ? 1 : coldMinutes < 6 * 60 ? 2 : 3)
+
+/**
+ * A percentage ring: a faint full track, the filled part from the top clockwise, and an optional
+ * short label in the middle (a grade letter). A dashed ring means "cold". Desktop only.
+ */
+export function ringSvg(pct: number, color: string, opts: { size?: number; dashed?: boolean; label?: string } = {}): string {
+  const size = opts.size ?? 22
+  const sw = Math.max(2.4, size / 8)
+  const r = size / 2 - sw / 2 - 0.5
+  const c = 2 * Math.PI * r
+  const mid = size / 2
+  const v = Math.max(0, Math.min(100, pct))
+  const track = opts.dashed
+    ? `<circle cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-dasharray="2.2 2.4"/>`
+    : `<circle cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke="${color}" stroke-opacity=".22" stroke-width="${sw}"/>`
+  const arc = !opts.dashed && v > 0 ? `<circle cx="${mid}" cy="${mid}" r="${r}" fill="none" stroke="${color}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${((c * v) / 100).toFixed(2)} ${c.toFixed(2)}" transform="rotate(-90 ${mid} ${mid})"/>` : ''
+  const fs = size * 0.46
+  const label = opts.label ? `<text x="${mid}" y="${(mid + fs * 0.36).toFixed(2)}" text-anchor="middle" font-family="${FONT}" font-size="${fs.toFixed(1)}" font-weight="800" fill="${color}">${xml(opts.label)}</text>` : ''
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${track}${arc}${label}</svg>`
+}
+
+/** A full-width hairline between the sections of a panel. */
+export const hairlineSvg = () => `<svg xmlns="http://www.w3.org/2000/svg" width="2400" height="1" viewBox="0 0 2400 1" preserveAspectRatio="none"><rect width="2400" height="1" fill="#8A8A93" fill-opacity=".35"/></svg>`
+
+// ---------- Token weather: how full the context is, said as a forecast ----------
+
+export function weatherOf(percent: number): { icon: string; word: string; color: string } {
+  if (percent < 25) return { icon: '☀', word: 'Clear', color: '#EAB308' }
+  if (percent < 50) return { icon: '☁', word: 'Cloudy', color: '#94A3B8' }
+  if (percent < 75) return { icon: '☂', word: 'Showers', color: STATUS.info }
+  if (percent < 90) return { icon: '⛈', word: 'Storm', color: STATUS.warn }
+  return { icon: '⚠', word: 'Compact soon', color: STATUS.bad }
+}
+
+/** Block characters for a row of numbers, scaled to the largest. */
+export const sparkText = (values: number[]) => {
+  const hi = Math.max(1, ...values)
+  return values.map(v => '▁▂▃▄▅▆▇█'[Math.min(7, Math.round((v / hi) * 7))] ?? '▁').join('')
+}
+
+// ---------- Auto Model's fast mode and Ultracode: auto, on or off for this chat ----------
+// "auto": Auto Model turns it on by itself when a prompt calls for it (fast mode for urgent asks,
+// Ultracode for big multi-file code jobs) and back off after. "on": on for this chat now.
+// "off": never in this chat. Each press of its button moves auto → on → off → auto. The switch
+// in /mods ("auto-model:fast", "auto-model:ultracode") sets where every new chat starts.
+
+export type AmMode = 'auto' | 'on' | 'off'
+export type AmFeature = 'fast' | 'ultracode'
+export type AmModes = { fast: AmMode; ultracode: AmMode; at: number }
+
+export const nextAmMode = (m: AmMode): AmMode => (m === 'auto' ? 'on' : m === 'on' ? 'off' : 'auto')
+
+/** Where a new chat starts, from the switches. */
+export const amDefault = (json: Switches, f: AmFeature): AmMode => (isPartOn(json, 'auto-model', f) ? 'auto' : 'off')
+
+/** The newest of the chat's choices (Session Keeper's buttons or Auto Model's own chip), else the default. */
+export function amModesOf(json: Switches, ...picks: (AmModes | null | undefined)[]): AmModes {
+  const newest = picks.filter((p): p is AmModes => !!p).sort((a, b) => b.at - a.at)[0]
+  return newest ?? { fast: amDefault(json, 'fast'), ultracode: amDefault(json, 'ultracode'), at: 0 }
+}
+
+/** The button's words: "⚡ fast mode · auto", "· on", "· on (auto)" while Auto Model has it on, "· off". */
+export function amLabel(f: AmFeature, mode: AmMode, liveOn: boolean): string {
+  const name = f === 'fast' ? '⚡ fast mode' : '🛠 Ultracode'
+  const state = mode === 'auto' ? (liveOn ? 'on (auto)' : 'auto') : mode
+  return `${name} · ${state}`
+}
+
+/** The command that turns it on or off in this chat now: `/fast on|off`, `/effort ultracode on|off`. */
+export const amCommand = (f: AmFeature, on: boolean) => (f === 'fast' ? { command: 'fast', args: on ? 'on' : 'off' } : { command: 'effort', args: `ultracode ${on ? 'on' : 'off'}` })
+
+/** Runs it, and says in plain words what happened. Never throws. */
+export async function runAmCommand($: EngineInterface, f: AmFeature, on: boolean): Promise<string> {
+  const cmd = amCommand(f, on)
+  try {
+    const r = await $.command.run(cmd)
+    const said = String(r.text ?? '').trim()
+    return said || `${f === 'fast' ? 'Fast mode' : 'Ultracode'} ${on ? 'on' : 'off'} for this chat.`
+  } catch (err) {
+    return `/${cmd.command} ${cmd.args} did not run: ${String(err).slice(0, 120)}`
+  }
+}
+
+/** "claude-opus-5-5" → "Opus 5.5". */
+export function friendlyModel(model: string): string {
+  const m = /(haiku|sonnet|opus|fable|mythos)[-\s]?(\d+)?(?:[-.](\d+))?/i.exec(model)
+  if (!m) return model
+  const name = m[1]!.charAt(0).toUpperCase() + m[1]!.slice(1).toLowerCase()
+  return m[2] ? `${name} ${m[2]}${m[3] ? `.${m[3]}` : ''}` : name
+}
+
+/** One colour per model family, the same everywhere. */
+export function modelColor(model: string): string {
+  const f = friendlyModel(model)
+  return f.startsWith('Haiku') ? '#22C55E' : f.startsWith('Sonnet') ? '#F5A524' : f.startsWith('Fable') || f.startsWith('Mythos') ? '#4F7DF3' : ACCENT
+}
+
+/** One colour per effort level. */
+export const effortColor = (effort: string) => ({ low: STATUS.good, medium: STATUS.info, high: STATUS.warn, xhigh: ACCENT, max: STATUS.bad } as Record<string, string>)[effort] ?? STATUS.info
+
 // ---------- Small building blocks shared by panes ----------
 
 /** A pill: a short label on a tinted chip, as an SVG for the desktop. */

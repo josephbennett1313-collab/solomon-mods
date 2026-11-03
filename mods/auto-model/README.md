@@ -1,6 +1,6 @@
 # Auto Model
 
-Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat.
+Picks the model and effort for every prompt, runs fast mode and Ultracode on auto, on or off per chat, and compacts first when a switch would re-read a long chat.
 
 Part of [Solomon Mods](https://github.com/josephbennett1313-collab/solomon-mods), a free set of Claude Code mods by Joseph Bennett.
 
@@ -21,10 +21,10 @@ Turn it, or any part of it, on or off from the Mods tab (`/mods`).
 
 - `model`: Pick the model for each prompt
 - `effort`: Pick the effort for each prompt
-- `fast`: Turn on Fast mode when speed matters
-- `ultracode`: Turn on ultracode by itself for big multi-file code jobs (runs many helpers, uses more of your plan)
+- `fast`: Fast mode starts on auto in a new chat (turns on by itself for urgent asks); off starts it off
+- `ultracode`: Ultracode starts on auto in a new chat (added to big multi-file code jobs; runs many helpers, uses more of your plan); off starts it off
 - `compact`: Compact before a switch that would re-read a long chat
-- `chip`: Model chip above the prompt
+- `chip`: Auto Model chip above the prompt (only when Session Keeper's panel is hidden or off)
 
 ## Licence
 

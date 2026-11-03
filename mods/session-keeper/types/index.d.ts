@@ -26,6 +26,17 @@ export type Hold = { text: string; nowUsd: number; warmUsd: number; coldMins: nu
 
 export type Device = 'Mac mini' | 'MacBook' | 'iPhone'
 
+/** What this chat has done so far, for the facts row. */
+export type Facts = { startedAt: number; tools: number; edits: number; compactions: number; branch: string }
+
+/** Auto Model's fast mode and Ultracode for this chat: auto, on or off (shared with Auto Model). */
+export type AmMode = 'auto' | 'on' | 'off'
+export type AmModes = { fast: AmMode; ultracode: AmMode; at: number }
+
+/** Auto Model's values this panel reads (Auto Model owns and writes them). */
+export type AutoPick = { model: string; effort: string; fast: boolean; ultracode: boolean; tier: string; why: string; compacted: boolean; at: number }
+export type AutoLive = { installed: boolean; fast: boolean; ultracode: boolean; model: string; switching: string }
+
 export type Handoff = {
   phase: 'pick' | 'working' | 'ready' | 'failed'
   device: Device | ''
@@ -46,6 +57,16 @@ declare module 'claude-code' {
       warmUntil: number
       min: boolean
       hidden: boolean
+      facts: Facts | null
+      /** True while this panel draws Auto Model's row, so Auto Model draws no chip of its own. */
+      hosting: boolean
+      /** The fast mode and Ultracode choices made on this panel for this chat. */
+      amModes: AmModes | null
+    }
+    'auto-model': {
+      pick: AutoPick | null
+      live: AutoLive | null
+      modes: AmModes | null
     }
   }
 }

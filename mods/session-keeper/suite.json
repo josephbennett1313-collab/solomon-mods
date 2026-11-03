@@ -1,20 +1,24 @@
 {
   "title": "Session Keeper",
-  "what": "A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
+  "what": "One panel above the prompt: crab that snows when the cache is cold, quality/context/cache/limit rings, token weather, chat facts, cache buttons, Auto Model with fast mode and Ultracode buttons, a hold on cold-cache messages, and a device-aware handoff",
   "command": "/keeper \u00b7 /handoff \u00b7 /keepwarm",
   "pane": false,
   "parts": [
     {
       "key": "bar",
-      "label": "Cache bar above the prompt (cache, context, rewrite $, session $, 5 hrs, week)"
+      "label": "The panel above the prompt (rings, token weather, facts, cache buttons)"
     },
     {
       "key": "fox",
-      "label": "Animated Claude crab on the bar"
+      "label": "Animated Claude crab (snow falls on it when the cache has gone cold)"
     },
     {
       "key": "suggest",
       "label": "Smart button that suggests the best command right now"
+    },
+    {
+      "key": "automodel",
+      "label": "Show Auto Model inside the panel (model, effort, fast mode and Ultracode buttons)"
     },
     {
       "key": "hold",

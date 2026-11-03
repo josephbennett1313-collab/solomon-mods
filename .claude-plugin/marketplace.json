@@ -12,7 +12,7 @@
       "name": "session-keeper",
       "source": "./mods/session-keeper",
       "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
-      "version": "2.3.0",
+      "version": "2.4.0",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -102,7 +102,7 @@
       "name": "auto-model",
       "source": "./mods/auto-model",
       "description": "Auto Model: Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
-      "version": "2.3.0",
+      "version": "2.4.0",
       "author": {
         "name": "Joseph Bennett"
       },

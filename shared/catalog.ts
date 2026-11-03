@@ -5,21 +5,25 @@ export const CATALOG: ModInfo[] = [
   {
     "name": "session-keeper",
     "title": "Session Keeper",
-    "what": "A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
+    "what": "One panel above the prompt: crab that snows when the cache is cold, quality/context/cache/limit rings, token weather, chat facts, cache buttons, Auto Model with fast mode and Ultracode buttons, a hold on cold-cache messages, and a device-aware handoff",
     "command": "/keeper \u00b7 /handoff \u00b7 /keepwarm",
     "pane": false,
     "parts": [
       {
         "key": "bar",
-        "label": "Cache bar above the prompt (cache, context, rewrite $, session $, 5 hrs, week)"
+        "label": "The panel above the prompt (rings, token weather, facts, cache buttons)"
       },
       {
         "key": "fox",
-        "label": "Animated Claude crab on the bar"
+        "label": "Animated Claude crab (snow falls on it when the cache has gone cold)"
       },
       {
         "key": "suggest",
         "label": "Smart button that suggests the best command right now"
+      },
+      {
+        "key": "automodel",
+        "label": "Show Auto Model inside the panel (model, effort, fast mode and Ultracode buttons)"
       },
       {
         "key": "hold",
@@ -206,7 +210,7 @@ export const CATALOG: ModInfo[] = [
   {
     "name": "auto-model",
     "title": "Auto Model",
-    "what": "Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
+    "what": "Picks the model and effort for every prompt, runs fast mode and Ultracode on auto, on or off per chat, and compacts first when a switch would re-read a long chat",
     "command": "/automodel",
     "pane": false,
     "parts": [
@@ -220,11 +224,11 @@ export const CATALOG: ModInfo[] = [
       },
       {
         "key": "fast",
-        "label": "Turn on Fast mode when speed matters"
+        "label": "Fast mode starts on auto in a new chat (turns on by itself for urgent asks); off starts it off"
       },
       {
         "key": "ultracode",
-        "label": "Turn on ultracode by itself for big multi-file code jobs (runs many helpers, uses more of your plan)"
+        "label": "Ultracode starts on auto in a new chat (added to big multi-file code jobs; runs many helpers, uses more of your plan); off starts it off"
       },
       {
         "key": "compact",
@@ -232,7 +236,7 @@ export const CATALOG: ModInfo[] = [
       },
       {
         "key": "chip",
-        "label": "Model chip above the prompt"
+        "label": "Auto Model chip above the prompt (only when Session Keeper's panel is hidden or off)"
       }
     ]
   },
