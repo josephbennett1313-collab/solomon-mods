@@ -51,7 +51,7 @@ export const register: Register = on => {
     if (!(await partOn($, NAME, 'helpers'))) return next(e)
     helpersThisMessage += 1
     if (helpersThisMessage > MAX_HELPERS) {
-      const pick = await $.ui.ask(`Limit Guard: this would be helper number ${helpersThisMessage} for one message. Each one uses your plan. Start it?`, ['Start it', 'Stop here'])
+      const pick = await $.ui.ask(`Limit Guard: this would be helper number ${helpersThisMessage} for one message. Each one uses your plan. Start it?`, ['Start it', 'Stop here']).catch(() => 'Stop here')
       if (pick !== 'Start it') {
         stats.helpersHeld += 1
         return { deny: `Limit Guard: Joseph capped helpers for this message at ${helpersThisMessage - 1}. Finish with the helpers already running.` }
@@ -88,7 +88,7 @@ export const register: Register = on => {
     if (bytes > MAX_BYTES) {
       stats.bigReads += 1
       const mb = (bytes / 1_000_000).toFixed(1)
-      const pick = await $.ui.ask(`Limit Guard: ${e.file_path.split('/').pop()} is ${mb} MB. Reading it all fills much of the chat's memory. Read it anyway?`, ['Read part of it', 'Read it all', 'Skip it'])
+      const pick = await $.ui.ask(`Limit Guard: ${e.file_path.split('/').pop()} is ${mb} MB. Reading it all fills much of the chat's memory. Read it anyway?`, ['Read part of it', 'Read it all', 'Skip it']).catch(() => 'Skip it')
       if (pick === 'Read it all') return next(e)
       if (pick === 'Read part of it') return next({ ...e, limit: 400 })
       return { deny: `Limit Guard: ${e.file_path} is ${mb} MB, so Joseph skipped reading it. Search it with Grep, or read a small part with offset and limit.` }

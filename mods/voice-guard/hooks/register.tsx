@@ -2,7 +2,7 @@
 // When Claude is about to send, post, publish or draft something through a connector (email,
 // Slack, social posts, docs), Voice Guard reads the text for stock AI phrases. If it finds some, you
 // choose: Send as is, Rewrite first (Claude rewrites without them), or Cancel.
-// /voice <text> checks any text by hand. Written for Solomon Mods.
+// /voiceguard <text> checks any text by hand. Written for Solomon Mods.
 
 import type { Register } from 'claude-code'
 
@@ -53,13 +53,13 @@ function textOf(e: Record<string, unknown>) {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'voice', description: 'Voice Guard: check text for AI-sounding phrases, /voice <text>' })
+    await $.command.register({ name: 'voiceguard', description: 'Voice Guard: check text for AI-sounding phrases, /voiceguard <text>' })
     return next(e)
   })
 
-  on('command.run', { command: 'voice' }, async (_$, e) => {
+  on('command.run', { command: 'voiceguard' }, async (_$, e) => {
     const text = String(e.args ?? '').trim()
-    if (!text) return { text: 'Paste the text after the command, like /voice Hi Sam, ...' }
+    if (!text) return { text: 'Paste the text after the command, like /voiceguard Hi Sam, ...' }
     const tells = findTells(text)
     return { text: tells.length ? `Sounds AI-written in ${tells.length} place${tells.length === 1 ? '' : 's'}:\n${tells.map(t => `- ${t}`).join('\n')}` : 'Reads like a person wrote it. Nothing flagged.' }
   })
@@ -70,7 +70,7 @@ export const register: Register = on => {
     const text = textOf(e as unknown as Record<string, unknown>)
     const tells = text ? findTells(text) : []
     if (tells.length === 0) return next(e)
-    const pick = await $.ui.ask(`Voice Guard: this ${tool.split('__').pop()?.replace(/_/g, ' ')} sounds AI-written: ${tells.join(', ')}.`, ['Rewrite first', 'Send as is', 'Cancel'])
+    const pick = await $.ui.ask(`Voice Guard: this ${tool.split('__').pop()?.replace(/_/g, ' ')} sounds AI-written: ${tells.join(', ')}.`, ['Rewrite first', 'Send as is', 'Cancel']).catch(() => 'Cancel')
     await log($, NAME, `${pick}: ${tool} (${tells.join('; ')})`)
     if (pick === 'Send as is') return next(e)
     if (pick === 'Rewrite first') return { deny: `Voice Guard: rewrite this so it sounds like Joseph wrote it: plain, direct, short sentences. Remove: ${tells.join(', ')}. Then try again.` }

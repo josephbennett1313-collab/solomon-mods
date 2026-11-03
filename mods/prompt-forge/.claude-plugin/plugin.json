@@ -1,6 +1,6 @@
 {
   "name": "prompt-forge",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "description": "Prompt Forge: Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
   "author": {
     "name": "Joseph Bennett"

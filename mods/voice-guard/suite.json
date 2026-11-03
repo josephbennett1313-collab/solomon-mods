@@ -1,7 +1,7 @@
 {
   "title": "Voice Guard",
   "what": "Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
-  "command": "/voice",
+  "command": "/voiceguard",
   "pane": false,
   "parts": []
 }

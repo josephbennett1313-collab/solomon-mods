@@ -1,6 +1,6 @@
 {
   "name": "assumption-radar",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Assumption Radar: Lists decisions Claude made without asking so you can mark each right or wrong",
   "author": {
     "name": "Joseph Bennett"

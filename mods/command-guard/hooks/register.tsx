@@ -50,7 +50,7 @@ export const register: Register = on => {
     if (hits.length === 0) return next(e)
     const why = hits.map(h => h.what).join('; and it ')
     const shown = e.command.length > 160 ? `${e.command.slice(0, 159)}…` : e.command
-    const pick = await $.ui.ask(`Command Guard: Claude wants to run\n\n${shown}\n\nThis ${why}. Run it?`, ['Proceed', 'Cancel'])
+    const pick = await $.ui.ask(`Command Guard: Claude wants to run\n\n${shown}\n\nThis ${why}. Run it?`, ['Proceed', 'Cancel']).catch(() => 'Cancel')
     held.push({ at: Date.now(), command: e.command, what: why, choice: pick === 'Proceed' ? 'Allowed' : 'Stopped' })
     await log($, NAME, `${pick === 'Proceed' ? 'allowed' : 'stopped'}: ${e.command.slice(0, 200)}`)
     if (pick === 'Proceed') return next(e)
