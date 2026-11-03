@@ -1,5 +1,5 @@
 // Session Keeper (Solomon Mods): keeps a chat cheap and tells you the best move right now.
-// - The bar: fox, cache minutes left, context %, "rewrite ≈ $" (what re-reading the chat costs
+// - The bar: crab, cache minutes left, context %, "rewrite ≈ $" (what re-reading the chat costs
 //   once the cache is cold), "session $" (this chat's /cost), 5-hour and weekly use.
 // - The smart button: the one command that helps most right now (Compact, Handoff, Doctor ...),
 //   with why. The ▾ opens a balanced grid of every command this Claude Code has.
@@ -13,7 +13,7 @@ import type { EngineInterface, Register, RenderChildren } from 'claude-code'
 
 import type { Bar, Device, Handoff, Hold, Suggest, Tip } from '../types'
 import { DESCRIBE, GROUPS } from './commands'
-import { ACCENT, STATUS, foxGlyph, foxSvg, homeOf, log, money, partOn, roomy, tokenText } from './suite'
+import { ACCENT, STATUS, crabGlyph, crabSvg, homeOf, log, money, partOn, roomy, tokenText } from './suite'
 
 const NAME = 'session-keeper'
 const BAR = { plugin: 'session-keeper', key: 'bar' } as const
@@ -57,9 +57,11 @@ let warmTimer: { cancel: () => void } | null = null
 
 const isPerson = (kind: string) => !BACKGROUND.has(kind)
 
+const emptyBar = (): Bar => ({ now: Date.now(), lastEnd: 0, ttlMs: FIVE_MIN, ttlKnown: false, tokens: 0, percent: 0, sessionUsd: 0, fiveHour: null, week: null, model: '', fast: false })
+
 async function patchBar($: EngineInterface, fn: (b: Bar) => Bar) {
   const { value } = await $.state.get(BAR)
-  const base: Bar = value ?? { now: Date.now(), lastEnd: 0, ttlMs: FIVE_MIN, ttlKnown: false, tokens: 0, percent: 0, sessionUsd: 0, fiveHour: null, week: null, model: '', fast: false }
+  const base: Bar = value ?? emptyBar()
   await $.state.set(BAR, fn(base))
 }
 
@@ -257,6 +259,7 @@ export const register: Register = on => {
     await $.command.register({ name: 'keeper', description: 'Session Keeper: open the command guide and cache status' })
     await $.command.register({ name: 'handoff', description: 'Write a handoff for your Mac mini, MacBook or iPhone and move on' })
     await $.command.register({ name: 'keepwarm', description: 'Keep the prompt cache warm for up to 2 hours' })
+    await patchBar($, x => x)
     await refresh($)
     void detectTtl($)
     $.clock.every(15_000, () => void refresh($))
@@ -331,7 +334,7 @@ export const register: Register = on => {
     const ui = $.ui.resolve(e)
     const { Box, Text, Button } = ui
     const desktop = e.surface === 'desktop' || e.surface === 'mobile'
-    const { value: b } = await $.state.get(BAR)
+    const b = (await $.state.get(BAR)).value ?? emptyBar()
     const { value: s } = await $.state.get(SUGGEST)
     const { value: hold } = await $.state.get(HOLD)
     const { value: h } = await $.state.get(HANDOFF)
@@ -411,7 +414,7 @@ export const register: Register = on => {
       const mins = Math.max(0, Math.ceil(ms / 60_000))
       const cacheColor = cold ? STATUS.bad : mins <= 2 ? STATUS.warn : STATUS.good
       const cacheText = !b.lastEnd ? 'cache ready' : cold ? 'cache cold' : `cache warm ${mins}m`
-      const fox = showFox ? (desktop && 'Svg' in ui ? <ui.Svg source={foxSvg(22, ACCENT, { id: 'skfox' })} alt="fox" width={22} height={22} /> : <Text>{foxGlyph(Math.floor(Date.now() / 1000))}</Text>) : null
+      const fox = showFox ? (desktop && 'Svg' in ui ? <ui.Svg source={crabSvg(24, ACCENT, { id: 'skcrab' })} alt="Claude crab" width={24} height={17} /> : <Text>{crabGlyph()}</Text>) : null
       mine.push(
         <Box key="bar" flexDirection="row" alignItems="center" columnGap={1}>
           {fox}
@@ -486,8 +489,9 @@ export const register: Register = on => {
       </Box>,
     )
 
-    if (mine.length === 0) return next(e)
-    return roomy(<Box flexDirection="column">{mine}</Box>, e.surface)
+    const rest = await next(e)
+    if (mine.length === 0) return rest
+    return roomy(<Box flexDirection="column">{rest}{mine}</Box>, e.surface)
   })
 }
 

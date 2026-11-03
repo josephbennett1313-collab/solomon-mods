@@ -19,7 +19,6 @@ declare module 'claude-code' {
       draft: Draft
       gallery: Shot[]
       balance: string
-      server: string
     }
   }
 }

@@ -15,7 +15,7 @@ export const CATALOG: ModInfo[] = [
       },
       {
         "key": "fox",
-        "label": "Animated red fox on the bar"
+        "label": "Animated Claude crab on the bar"
       },
       {
         "key": "suggest",
@@ -38,13 +38,13 @@ export const CATALOG: ModInfo[] = [
   {
     "name": "mission-control",
     "title": "Mission Control",
-    "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+    "what": "A goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
     "command": "/mission \u00b7 /alltasks (and Claude Code's /goal)",
     "pane": true,
     "parts": [
       {
         "key": "taskbar",
-        "label": "Red task bar above the prompt"
+        "label": "Task bar above the prompt"
       },
       {
         "key": "goal",
@@ -80,7 +80,7 @@ export const CATALOG: ModInfo[] = [
   {
     "name": "helper-desk",
     "title": "Helper Desk",
-    "what": "A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+    "what": "A Helper Desk tab with a crab card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
     "command": "/helpers \u00b7 /team",
     "pane": true,
     "parts": [
@@ -170,7 +170,7 @@ export const CATALOG: ModInfo[] = [
     "parts": [
       {
         "key": "autoopen",
-        "label": "Open the pane by itself"
+        "label": "Open the tab when a chat starts"
       },
       {
         "key": "report",

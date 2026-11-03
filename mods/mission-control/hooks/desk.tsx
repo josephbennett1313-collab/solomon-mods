@@ -44,9 +44,9 @@ const WARN = STATUS.warn
 const INK = '#0A0A0B'
 // The task bar is the suite gradient, light at the start and deep at the head (after Johnny's Savvy Progress).
 // The task bar is red, the same red as All Tasks.
-const P_LIGHT = '#F87171'
-const P_MID = '#E11D2E'
-const P_DEEP = '#991B1B'
+const P_LIGHT = '#FF9A6B'
+const P_MID = '#F0603A'
+const P_DEEP = '#C2410C'
 // Quarter circles read clearly on desktop fonts and in the terminal.
 const SPIN = ['◐', '◓', '◑', '◒']
 const PULSE = ['●∙∙', '∙●∙', '∙∙●', '∙●∙']
@@ -560,7 +560,7 @@ const PLAN_PROMPT =
   'Otherwise your to-do list is the mcp__mission-control__plan tool. The user watches it as a progress bar. ' +
   'For any task that needs 2 or more steps or tool calls, call it first, before other tools, with every step in order and the first one in_progress. ' +
   'Call it again with the full list each time a step finishes or a new one starts. Mark the last step completed before your final answer. ' +
-  'When you write a plan for the user to approve, save its steps with the tool too, all pending, so the plan shows in the bar and the Chat Ledger to-do list. ' +
+  'When you write a plan for the user to approve, save its steps with the tool too, all pending, so the plan shows in the bar and the Session Ledger to-do list. ' +
   'A step that launches subagents is one step. Skip it only for a one-line answer with no tool calls.'
 // Main-chat tool calls in a turn before the nudge to make a plan.
 const NUDGE_AFTER = 1

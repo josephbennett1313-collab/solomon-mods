@@ -12,7 +12,7 @@
       },
       {
         "key": "fox",
-        "label": "Animated red fox on the bar"
+        "label": "Animated Claude crab on the bar"
       },
       {
         "key": "suggest",
@@ -36,13 +36,13 @@
     "name": "mission-control",
     "version": "2.0.1",
     "title": "Mission Control",
-    "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+    "what": "A goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
     "command": "/mission · /alltasks (and Claude Code's /goal)",
     "pane": true,
     "parts": [
       {
         "key": "taskbar",
-        "label": "Red task bar above the prompt"
+        "label": "Task bar above the prompt"
       },
       {
         "key": "goal",
@@ -78,7 +78,7 @@
   {
     "name": "helper-desk",
     "title": "Helper Desk",
-    "what": "A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+    "what": "A Helper Desk tab with a crab card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
     "command": "/helpers · /team",
     "pane": true,
     "parts": [
@@ -168,7 +168,7 @@
     "parts": [
       {
         "key": "autoopen",
-        "label": "Open the pane by itself"
+        "label": "Open the tab when a chat starts"
       },
       {
         "key": "report",

@@ -7,11 +7,11 @@ import type { EngineInterface } from 'claude-code'
 
 // ---------- Design tokens ----------
 
-/** The one accent: fox red, with a gradient that runs from ember to deep red. */
-export const ACCENT = '#E8452C'
-export const GRADIENT = ['#FF8A5B', '#E8452C', '#B3201A'] as const
-/** A colour per helper, category or segment. Red first, then a colourful spread. */
-export const PALETTE = ['#E8452C', '#F59E0B', '#22C55E', '#38BDF8', '#A78BFA', '#F472B6', '#14B8A6', '#FB923C', '#84CC16', '#60A5FA'] as const
+/** The one accent: a warm reddish-orange, with a gradient from peach to burnt orange. */
+export const ACCENT = '#F0603A'
+export const GRADIENT = ['#FF9A6B', '#F0603A', '#C2410C'] as const
+/** A colour per helper, category or segment. The accent first, then a colourful spread. */
+export const PALETTE = ['#F0603A', '#F59E0B', '#22C55E', '#38BDF8', '#A78BFA', '#F472B6', '#14B8A6', '#FB923C', '#84CC16', '#60A5FA'] as const
 export const paletteAt = (i: number) => PALETTE[((i % PALETTE.length) + PALETTE.length) % PALETTE.length] ?? ACCENT
 /** The "live" highlight: a cyan glint for the thing happening right now. */
 export const LIVE = '#22D3EE'
@@ -338,33 +338,73 @@ export function roomy<T>(tree: T, surface: unknown): T {
   return walk(tree, true) as T
 }
 
-// ---------- The red fox: an original animated mascot (desktop SVG, terminal glyph) ----------
+// ---------- The Claude crab: a pixel mascot that hops, blinks and waves (desktop SVG, terminal glyph) ----------
 
-/** An SVG of a small sitting fox whose tail sways and ears twitch. `color` tints the coat. */
-export function foxSvg(size = 28, color: string = ACCENT, opts: { still?: boolean; id?: string } = {}): string {
-  const id = opts.id ?? 'fx'
-  const deep = mix(color, '#000000', 0.35)
-  const anim = opts.still
-    ? ''
-    : `.${id}-tail{transform-origin:20px 30px;animation:${id}-sway 1.8s ease-in-out infinite}
-@keyframes ${id}-sway{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(10deg)}}
-.${id}-ear{transform-origin:12px 9px;animation:${id}-twitch 3.2s ease-in-out infinite}
-@keyframes ${id}-twitch{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-12deg)}94%{transform:rotate(4deg)}}
-.${id}-glow{animation:${id}-glow 2.4s ease-in-out infinite}@keyframes ${id}-glow{0%,100%{opacity:.15}50%{opacity:.4}}
-@media (prefers-reduced-motion: reduce){.${id}-tail,.${id}-ear,.${id}-glow{animation:none}}`
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 32 32"><style>${anim}</style>
-<circle class="${id}-glow" cx="16" cy="18" r="14" fill="${color}" opacity=".2"/>
-<g class="${id}-tail"><path d="M20 27c6 1 10-3 9-9-1 3-4 5-7 5z" fill="${color}"/><path d="M27.6 19.5c.8 2.6-.4 5.6-3.4 6.6 1.6-1.6 2.6-3.6 3.4-6.6z" fill="#FFF7EE"/></g>
-<path d="M9 28c-1-6 1-11 7-12 5 1 7 6 6 12z" fill="${color}"/>
-<path d="M13 28c0-4 1-7 3-8 2 1 3 4 3 8z" fill="#FFF7EE"/>
-<g class="${id}-ear"><path d="M9 5l3 7-5 1z" fill="${deep}"/></g><path d="M23 5l-3 7 5 1z" fill="${deep}"/>
-<path d="M7 12c1-3 5-5 9-5s8 2 9 5c-1 4-5 6-9 6s-8-2-9-6z" fill="${color}"/>
-<path d="M11 14c2 2 3 3 5 3s3-1 5-3c-1 3-3 4-5 4s-4-1-5-4z" fill="#FFF7EE"/>
-<circle cx="12.6" cy="12.2" r="1" fill="#1A1A1A"/><circle cx="19.4" cy="12.2" r="1" fill="#1A1A1A"/><circle cx="16" cy="15.4" r=".9" fill="#1A1A1A"/></svg>`
+type Px = [x: number, y: number]
+const crabSpan = (y: number, from: number, to: number): Px[] => Array.from({ length: to - from + 1 }, (_, i) => [from + i, y] as Px)
+
+/** One frame on a 16 by 12 grid. 0 stands; 1 hops up a pixel with its legs moved; 2 blinks; 3 raises both claws. */
+function crabFrame(frame: number): { body: Px[]; eyes: Px[] } {
+  const dy = frame === 1 ? 0 : 1
+  const clawsUp = frame === 3
+  const body: Px[] = [
+    ...crabSpan(1, 3, 12),
+    ...crabSpan(2, 3, 12),
+    ...crabSpan(3, 3, 12),
+    ...(clawsUp ? crabSpan(4, 3, 12) : crabSpan(4, 1, 14)),
+    ...(clawsUp ? crabSpan(5, 3, 12) : crabSpan(5, 1, 14)),
+    ...crabSpan(6, 3, 12),
+    ...crabSpan(7, 3, 12),
+  ]
+  if (clawsUp) body.push([1, 2], [2, 2], [1, 3], [2, 3], [13, 2], [14, 2], [13, 3], [14, 3])
+  const legs = frame % 2 === 1 ? [3, 5, 10, 12] : [4, 6, 9, 11]
+  for (const x of legs) body.push([x, 8], [x, 9])
+  const eyes: Px[] = frame === 2 ? [[5, 4], [10, 4]] : [[5, 3], [5, 4], [10, 3], [10, 4]]
+  const move = (p: Px): Px => [p[0], p[1] + dy]
+  return { body: body.map(move), eyes: eyes.map(move) }
 }
 
-/** The terminal's fox: one glyph; it blinks between two frames when `tick` advances. */
-export const foxGlyph = (tick = 0) => (tick % 6 === 5 ? '🦊˙' : '🦊')
+const CRAB_INK = '#2b1d16'
+
+/** The pixels of one frame, with a one-pixel outline so every body colour reads on light and dark. */
+function crabRects(frame: number, color: string): string {
+  const { body, eyes } = crabFrame(frame)
+  const has = new Set(body.map(([x, y]) => `${x},${y}`))
+  const ring = new Set<string>()
+  for (const [x, y] of body) {
+    for (const [ax, ay] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as Px[]) {
+      const k = `${ax},${ay}`
+      if (!has.has(k)) ring.add(k)
+    }
+  }
+  const rect = (x: number, y: number, c: string) => `<rect x="${x + 1}" y="${y + 1}" width="1" height="1" fill="${c}"/>`
+  return [
+    ...[...ring].map(k => {
+      const [x, y] = k.split(',').map(Number)
+      return rect(x ?? 0, y ?? 0, CRAB_INK)
+    }),
+    ...body.map(([x, y]) => rect(x, y, color)),
+    ...eyes.map(([x, y]) => rect(x, y, CRAB_INK)),
+  ].join('')
+}
+
+/** The crab as an SVG: it hops, blinks and waves its claws on a loop. `color` tints its body. Height is 13/18 of `size`. */
+export function crabSvg(size = 28, color: string = ACCENT, opts: { still?: boolean; id?: string } = {}): string {
+  const id = opts.id ?? 'cr'
+  const h = Math.round((size * 13) / 18)
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${h}" viewBox="0 0 18 13" shape-rendering="crispEdges">`
+  if (opts.still) return `${head}${crabRects(0, color)}</svg>`
+  const frames = [0, 1, 2, 3].map(f => `<g class="${id}-f ${id}-f${f}">${crabRects(f, color)}</g>`).join('')
+  const css =
+    `.${id}-f{opacity:0;animation:${id}-a 1.6s step-end infinite}` +
+    [1, 2, 3].map(f => `.${id}-f${f}{animation-delay:${f * 0.4}s}`).join('') +
+    `@keyframes ${id}-a{0%{opacity:1}25%{opacity:0}100%{opacity:0}}` +
+    `@media (prefers-reduced-motion: reduce){.${id}-f{animation:none}.${id}-f0{opacity:1}}`
+  return `${head}<style>${css}</style>${frames}</svg>`
+}
+
+/** The terminal's crab. */
+export const crabGlyph = (_tick = 0) => '🦀'
 
 // ---------- Small building blocks shared by panes ----------
 

@@ -1,5 +1,5 @@
-// Helper Desk (Solomon Mods): a tab that is always open beside the chat.
-// - A fox card for every helper agent, each its own colour, with a clear title, what it is doing,
+// Helper Desk (Solomon Mods): a tab beside the chat that opens when helpers start.
+// - A crab card for every helper agent, each its own colour, with a clear title, what it is doing,
 //   its tokens and its time.
 // - This chat's total cost, all helpers' tokens and time.
 // - A to-do list that is saved across chats (/todo <text> adds one).
@@ -9,7 +9,7 @@
 import type { EngineInterface, Register, RenderChildren } from 'claude-code'
 
 import type { Dock, Helper, Todo } from '../types'
-import { ACCENT, STATUS, cut, duration, foxGlyph, foxSvg, log, money, paletteAt, partOn, roomy, tokenText } from './suite'
+import { ACCENT, STATUS, cut, duration, crabGlyph, crabSvg, log, money, paletteAt, partOn, roomy, tokenText } from './suite'
 
 const NAME = 'helper-desk'
 const PANE = 'helper-desk'
@@ -27,6 +27,7 @@ const MODELS: { label: string; id: string }[] = [
   { label: 'Opus', id: 'claude-opus-5-5' },
 ]
 const LIVE = new Set(['pending', 'running', 'waiting'])
+let opened = false
 
 /** "explore the auth folder" -> "Explore the auth folder". */
 const tidy = (s: string) => {
@@ -88,7 +89,6 @@ export const register: Register = on => {
     await $.command.register({ name: 'todo', description: 'Add a to-do to Helper Desk: /todo <text>' })
     await $.command.register({ name: 'team', description: 'Helper Desk: set how many helpers may run at once, /team 3 (0 = no limit)' })
     $.clock.every(3000, () => void sync($))
-    if (await partOn($, NAME, 'autoopen')) await $.ui.open({ id: PANE, title: 'Helper Desk' })
     return next(e)
   })
 
@@ -129,6 +129,10 @@ export const register: Register = on => {
         { id: r.agentId, title: tidy(e.description), type: e.subagentType || 'general-purpose', color: paletteAt(cur.length + 1), status: 'running', startedAt: Date.now(), endedAt: 0, tokens: 0, ms: 0, model: r.model },
       ])
     }
+    if (r.agentId && !opened && (await partOn($, NAME, 'autoopen'))) {
+      opened = true
+      await $.ui.open({ id: PANE, title: 'Helper Desk' }).catch(err => log($, NAME, `open: ${String(err)}`))
+    }
     return r
   })
 
@@ -161,7 +165,7 @@ export const register: Register = on => {
     const ms = list.reduce((s, h) => s + (h.ms || ((h.endedAt || Date.now()) - h.startedAt)), 0)
     const running = list.filter(h => LIVE.has(h.status)).length
     const fox = (color: string, id: string, still: boolean) =>
-      desktop ? <ui.Svg source={foxSvg(26, color, { id, still })} alt="fox" width={26} height={26} /> : <Text color={color}>{foxGlyph(still ? 0 : Math.floor(Date.now() / 1000))}</Text>
+      desktop ? <ui.Svg source={crabSvg(30, color, { id, still })} alt="Claude crab" width={30} height={22} /> : <Text color={color}>{crabGlyph()}</Text>
     const stat = (label: string, value: string, color?: string) => (
       <Box key={`s-${label}`} flexDirection="column" borderStyle="round" paddingX={1} flexGrow={1}>
         <Text dimColor size="caption">{label}</Text>

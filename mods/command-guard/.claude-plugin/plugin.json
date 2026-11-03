@@ -1,6 +1,6 @@
 {
   "name": "command-guard",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Command Guard: Holds risky shell commands (delete everything, force push, hard reset) until you press Proceed",
   "author": {
     "name": "Joseph Bennett"

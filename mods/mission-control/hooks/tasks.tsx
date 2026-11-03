@@ -6,7 +6,7 @@ import type { EngineInterface } from 'claude-code'
 
 import { STATUS, barCells, cut, homeOf } from './suite'
 
-const RED = { light: '#F87171', mid: '#E11D2E', deep: '#991B1B' }
+const RED = { light: '#FF9A6B', mid: '#F0603A', deep: '#C2410C' }
 const WEEK = 7 * 24 * 3600_000
 
 type Saved = { title?: string; steps?: { text: string; status: string }[]; updatedAt?: string }

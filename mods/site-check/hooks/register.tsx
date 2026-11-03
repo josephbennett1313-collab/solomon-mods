@@ -95,8 +95,9 @@ export const register: Register = on => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const width = Math.max(40, (e.props.bodyColumns ?? 100) - 4)
     const barW = Math.max(8, Math.min(24, Math.floor(width / 4) - 6))
+    const rest = await next(e)
     return roomy(
-      <Box flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1}>
+      <Box flexDirection="column">{rest}<Box flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1}>
         <Box flexDirection="row" columnGap={1}>
           <Text bold color={ACCENT}>Site Check</Text>
           <Text dimColor wrap="truncate-end">{cut(r.url, width - 30)} · {r.device}</Text>
@@ -125,7 +126,7 @@ export const register: Register = on => {
           </Box>
         ) : null}
         {r.phase === 'failed' ? <Button key="sc-retry" label="Try again" onPress={() => void run($, r.url, r.device)} /> : null}
-      </Box>,
+      </Box></Box>,
       e.surface,
     )
   })

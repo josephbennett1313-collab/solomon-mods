@@ -102,12 +102,13 @@ export const register: Register = on => {
     const ideas = (await $.state.get(IDEAS)).value ?? []
     if (ideas.length === 0 || !(await partOn($, NAME, 'band'))) return next(e)
     const { Box, Text, Button } = $.ui.resolve(e)
+    const rest = await next(e)
     return roomy(
-      <Box flexDirection="row" columnGap={1} alignItems="center">
+      <Box flexDirection="column">{rest}<Box flexDirection="row" columnGap={1} alignItems="center">
         <Text color={STATUS.warn}>✦</Text>
         <Text dimColor>{ideas.length} idea{ideas.length === 1 ? '' : 's'} on the shelf for {project}</Text>
         <Button key="is-open" plain label="Open shelf" onPress={() => $.ui.open({ id: PANE, title: 'Idea Shelf' })} />
-      </Box>,
+      </Box></Box>,
       e.surface,
     )
   })

@@ -77,6 +77,8 @@ export type Job = {
   title: string
   /** Minutes of that work done by helpers (subagents). */
   helperMinutes?: number
+  /** The model the chat ran on when the job ended. */
+  model?: string
 }
 
 /** The period the report shows. */

@@ -12,14 +12,14 @@ import { GRADIENT, MARK, STATUS, homeOf, isPartOn, paletteAt, roomy, vaultPath }
 const PLUGIN = 'session-ledger'
 const NAME = 'session-ledger'
 const PANE = 'session-ledger'
-const TITLE = 'Chat Ledger'
+const TITLE = 'Session Ledger'
 const MAX_ROWS = 40
 const MAX_CALLS = 60
 // Context files show in a window this many rows tall; Up and Down move it.
 const FILE_WINDOW = 10
 const FILE_STEP = 5
 const SECTIONS = ['todo', 'connectors', 'files', 'places', 'skills'] as const
-const OFF_LINE = 'Chat Ledger is off. Open /mods to turn it on.'
+const OFF_LINE = 'Session Ledger is off. Open /mods to turn it on.'
 const NO_PLAN = 'No to-do list yet. Claude makes one for jobs with a few steps.'
 // The plan tool helper-desk registers, and Claude's built-in list tools, all feed the To-do section.
 const PLAN_TOOL = 'mcp__mission-control__plan'
@@ -662,9 +662,10 @@ function vaultFolders(paths: string[]) {
 export function registerInventory(on: On) {
   on('session.start', async ($, e, next) => {
     home = homeOf($)
-    await $.command.register({ name: 'ledger', description: 'Chat Ledger: what this chat used (to-do, connectors, files, skills) and Today\'s Report of tasks, hours and value', immediate: true })
+    await $.command.register({ name: 'ledger', description: 'Session Ledger: what this chat used (to-do, connectors, files, skills) and Today\'s Report of tasks, hours and value', immediate: true })
     await $.command.register({ name: 'report', description: "Today's Report: tasks Claude finished, hours saved and their value, by day, week and month", immediate: true })
     await readSwitch($)
+    if (!off && !hidden && isPartOn(await readSwitches($), NAME, 'autoopen')) await openPane($).catch(err => logError($, 'open at start', err))
     if (!switchTimer)
       switchTimer = $.clock.every(3000, () => {
         void readSwitch($)
@@ -679,11 +680,11 @@ export function registerInventory(on: On) {
   })
 
   on('command.run', { command: 'ledger' }, async $ => {
-    if (off) return { text: 'Chat Ledger is off. Turn it on with /mods.' }
+    if (off) return { text: 'Session Ledger is off. Turn it on with /mods.' }
     if (hidden) await setHidden($, false)
     await openPane($)
     void loadMemoryFiles($).catch(err => logError($, 'memory', err))
-    return { text: 'Opened Chat Ledger.' }
+    return { text: 'Opened Session Ledger.' }
   })
 
   // A skill the person typed as a slash command.
@@ -745,7 +746,7 @@ export function registerInventory(on: On) {
   }
 
   on('command.run', { command: 'report' }, async $ => {
-    if (off) return { text: 'Chat Ledger is off. Turn it on with /mods.' }
+    if (off) return { text: 'Session Ledger is off. Turn it on with /mods.' }
     return { text: await reportText($, settings.rate) }
   })
 
@@ -775,7 +776,7 @@ export function registerInventory(on: On) {
   on('ui.press', { plugin: 'session-ledger', element: 'hide' }, async ($, e) => {
     await setHidden($, true)
     try {
-      $.ui.toast('Chat Ledger hidden. Type /ledger or open /mods to show it.')
+      $.ui.toast('Session Ledger hidden. Type /ledger or open /mods to show it.')
     } catch {
       // The toast is only a hint.
     }
@@ -810,9 +811,9 @@ export function registerInventory(on: On) {
           <Text bold color={GRADIENT[2]}>
             {MARK[NAME]}
           </Text>
-          {tabBtn('chat', 'This chat')}
+          {tabBtn('chat', 'In this chat')}
           <Text dimColor>·</Text>
-          {tabBtn('report', "Today's Report")}
+          {tabBtn('report', 'Report')}
         </Box>
         <Button key="hide" label="Hide" dimColor onPress={() => undefined} />
       </Box>

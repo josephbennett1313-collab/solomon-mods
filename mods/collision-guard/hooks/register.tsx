@@ -111,8 +111,9 @@ export const register: Register = on => {
     if (list.length === 0 || !(await partOn($, NAME))) return next(e)
     const { Box, Text, Button } = $.ui.resolve(e)
     const width = e.props.bodyColumns ?? 100
+    const rest = await next(e)
     return roomy(
-      <Box flexDirection="column" borderStyle="round" borderColor={STATUS.bad} paddingX={1}>
+      <Box flexDirection="column">{rest}<Box flexDirection="column" borderStyle="round" borderColor={STATUS.bad} paddingX={1}>
         <Box flexDirection="row" columnGap={1}>
           <Text bold color={STATUS.bad}>⚠ Collision Guard</Text>
           <Text dimColor>{list.length} file{list.length === 1 ? '' : 's'} shared with another open chat</Text>
@@ -125,7 +126,7 @@ export const register: Register = on => {
         ))}
         {list.length > 4 ? <Text dimColor>and {list.length - 4} more. Type /collisions for all.</Text> : null}
         <Text dimColor wrap="truncate-end">{cut('Tip: finish in one chat first, or ask Claude to move this work to a worktree.', width - 4)}</Text>
-      </Box>,
+      </Box></Box>,
       e.surface,
     )
   })

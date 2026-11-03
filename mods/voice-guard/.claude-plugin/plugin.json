@@ -1,6 +1,6 @@
 {
   "name": "voice-guard",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Voice Guard: Flags AI-sounding phrases in posts and emails Claude writes, before they go out",
   "author": {
     "name": "Joseph Bennett"

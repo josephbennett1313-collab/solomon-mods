@@ -1,6 +1,6 @@
 {
   "name": "mission-control",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Mission Control: A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
   "author": {
     "name": "Joseph Bennett"

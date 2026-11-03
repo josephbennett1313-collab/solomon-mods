@@ -12,7 +12,7 @@
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { Pick } from '../types'
-import { ACCENT, STATUS, log as suiteLog, partOn, roomy, tokenText } from './suite'
+import { ACCENT, STATUS, isPartOn, log as suiteLog, partOn, readSwitches, roomy, tokenText, writeSwitches } from './suite'
 
 const NAME = 'auto-model'
 const PICK = { plugin: 'auto-model', key: 'pick' } as const
@@ -36,13 +36,21 @@ let current = ''
 let effort: Effort | '' = ''
 let fastOn = false
 let lastEnd = 0
+let appliedEffort = ''
 
 const log = ($: EngineInterface, line: string) => suiteLog($, NAME, line)
 
 export function friendly(model: string): string {
-  const m = model.toLowerCase()
-  for (const [k, v] of [['haiku', 'Haiku'], ['sonnet', 'Sonnet'], ['opus', 'Opus'], ['fable', 'Fable']] as const) if (m.includes(k)) return v
-  return model
+  const m = /(haiku|sonnet|opus|fable)[-\s]?(\d+)?(?:[-.](\d+))?/i.exec(model)
+  if (!m) return model
+  const name = m[1]!.charAt(0).toUpperCase() + m[1]!.slice(1).toLowerCase()
+  return m[2] ? `${name} ${m[2]}${m[3] ? `.${m[3]}` : ''}` : name
+}
+
+/** One colour per model family, the same everywhere. */
+const colorOf = (model: string) => {
+  const f = friendly(model)
+  return f.startsWith('Haiku') ? '#22C55E' : f.startsWith('Sonnet') ? '#F5A524' : f.startsWith('Fable') ? '#4F7DF3' : ACCENT
 }
 
 const MAX_RE = /\b(ultrathink|think (as )?hard(er)?|max(imum)? effort|as carefully as (you )?can|no mistakes)\b/i
@@ -81,6 +89,25 @@ async function setFast($: EngineInterface, on: boolean) {
   }
 }
 
+/** Runs /model or /effort, so the app's own model and effort change before Claude answers. */
+async function applySetting($: EngineInterface, command: 'model' | 'effort', args: string) {
+  try {
+    await $.command.run({ command, args })
+  } catch (err) {
+    await log($, `${command} ${args}: ${String(err)}`)
+  }
+}
+
+/** The ON/OFF switch on the chip: writes the same switch /mods uses. */
+async function toggle($: EngineInterface, value: boolean) {
+  const json = await readSwitches($, true)
+  await writeSwitches($, { ...json, [NAME]: value })
+  if (!value) {
+    current = ''
+    effort = ''
+  }
+}
+
 /** Decides the settings for this prompt and returns the text to send (ultracode may be added). */
 async function choose($: EngineInterface, text: string): Promise<string> {
   const tier = tierOf(text)
@@ -99,13 +126,15 @@ async function choose($: EngineInterface, text: string): Promise<string> {
     const tokens = u?.context.tokens ?? 0
     if (tokens > COMPACT_OVER && (await isWarm($))) {
       if (await partOn($, NAME, 'compact')) {
-        const r = await $.session.compact({ instructions: 'Keep every decision, open task, file path and next step. The next prompt switches model.' }).catch(() => null)
+        const r = await $.session.compact({ instructions: 'Keep every decision, open task, file path and next step. The next prompt switches model.' }).catch(async err => (await log($, `compact: ${String(err)}`), null))
         compacted = !!r && !('skip' in r && r.skip)
         why += compacted ? ` · compacted ${tokenText(tokens)} tokens first so the switch is cheap` : ''
       }
-      if (!compacted) {
-        why += ` · kept ${friendly(before)}: switching now would re-read ${tokenText(tokens)} tokens`
+      if (!compacted && tokens > 150_000) {
+        why += ` · kept ${friendly(before)}: switching now would re-read ${tokenText(tokens)} tokens. Run /compact to switch`
         model = ''
+      } else if (!compacted) {
+        why += ` · switched without compacting (${tokenText(tokens)} tokens read once)`
       }
     }
   }
@@ -114,6 +143,11 @@ async function choose($: EngineInterface, text: string): Promise<string> {
     if (eff === 'xhigh' || eff === 'max') eff = 'high'
   }
   await setFast($, fast)
+  if (model && friendly(model) !== friendly(before)) await applySetting($, 'model', model)
+  if (eff && eff !== appliedEffort) {
+    await applySetting($, 'effort', eff)
+    appliedEffort = eff
+  }
   current = model || current
   effort = eff
   const pick: Pick = { model: current || before, effort: (eff || 'medium') as Effort, fast, ultracode: ultra, tier, why, compacted, at: Date.now() }
@@ -128,6 +162,7 @@ export const register: Register = on => {
     sid = await $.session.id().catch(() => '')
     current = ''
     effort = ''
+    appliedEffort = ''
     lastEnd = 0
     await $.command.register({ name: 'automodel', description: 'Auto Model: what it picked for the last prompt and why' })
     return r
@@ -168,20 +203,25 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const json = await readSwitches($)
+    if (!isPartOn(json, NAME, 'chip')) return next(e)
+    const isOn = json[NAME] !== false
     const p = (await $.state.get(PICK)).value
-    if (!p || !(await partOn($, NAME, 'chip'))) return next(e)
-    const { Box, Text } = $.ui.resolve(e)
-    const effortColor = { low: STATUS.good, medium: STATUS.info, high: STATUS.warn, xhigh: ACCENT, max: STATUS.bad }[p.effort]
-    return roomy(
-      <Box flexDirection="row" columnGap={1}>
-        <Text color={ACCENT} bold>◆ Auto</Text>
-        <Text bold>{friendly(p.model)}</Text>
-        <Text color={effortColor}>{p.effort} effort</Text>
-        {p.fast ? <Text color={STATUS.warn}>⚡ fast</Text> : null}
-        {p.ultracode ? <Text color={STATUS.info}>ultracode</Text> : null}
-        <Text dimColor wrap="truncate-end">· {p.why}</Text>
-      </Box>,
-      e.surface,
+    const rest = await next(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
+    const effortColor = p ? { low: STATUS.good, medium: STATUS.info, high: STATUS.warn, xhigh: ACCENT, max: STATUS.bad }[p.effort] : undefined
+    const live = isOn && p
+    const chip = (
+      <Box key="am" flexDirection="row" columnGap={1} alignItems="center">
+        <Text bold>Auto Model</Text>
+        <Button key="am-toggle" variant={isOn ? 'primary' : undefined} label={isOn ? 'ON' : 'OFF'} onPress={() => toggle($, !isOn)} />
+        {live ? <Text bold color={colorOf(p.model)}>{`● ${friendly(p.model)} ✓`}</Text> : null}
+        {live ? <Text color={effortColor}>{`${p.effort} effort`}</Text> : null}
+        {live && p.fast ? <Text color={STATUS.warn}>⚡ Fast</Text> : null}
+        {live && p.ultracode ? <Text color={STATUS.info}>ultracode</Text> : null}
+        <Text dimColor wrap="truncate-end">{isOn ? (p ? `· ${p.why}` : '· sets the model, effort and Fast mode each time you send') : '· off: your own model stays as set'}</Text>
+      </Box>
     )
+    return roomy(<Box flexDirection="column">{rest}{chip}</Box>, e.surface)
   })
 }

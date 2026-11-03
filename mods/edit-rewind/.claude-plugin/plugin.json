@@ -1,6 +1,6 @@
 {
   "name": "edit-rewind",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Edit Rewind: Step through a turn's edits, undo a turn, and restore from a snapshot timeline",
   "author": {
     "name": "Joseph Bennett"

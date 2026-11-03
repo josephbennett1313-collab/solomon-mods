@@ -1,4 +1,4 @@
-// Chat Ledger (Solomon Mods): what this chat used, and what all of Claude's work is worth.
+// Session Ledger (Solomon Mods): what this chat used, and what all of Claude's work is worth.
 // "This chat": the to-do list, connectors and their calls, files and skills (Ben AI's Chat Inventory).
 // "Today's Report": tasks done, hours saved and dollar value by day, week and month (Tristen O'Brien's idea).
 
