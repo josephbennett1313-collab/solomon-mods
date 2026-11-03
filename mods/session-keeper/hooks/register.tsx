@@ -13,7 +13,7 @@ import type { EngineInterface, Register, RenderChildren } from 'claude-code'
 
 import type { Bar, Device, Handoff, Hold, Suggest, Tip } from '../types'
 import { DESCRIBE, GROUPS } from './commands'
-import { ACCENT, STATUS, crabGlyph, crabSvg, homeOf, log, money, partOn, roomy, tokenText } from './suite'
+import { ACCENT, STATUS, barCells, barSvg, crabGlyph, crabSvg, homeOf, log, money, partOn, roomy, tokenText } from './suite'
 
 const NAME = 'session-keeper'
 const BAR = { plugin: 'session-keeper', key: 'bar' } as const
@@ -133,6 +133,8 @@ function decide(b: Bar): Suggest {
   if (errorsThisTurn >= 6) add(73, 'doctor', 'Many errors in a row can mean Claude Code itself needs a check.')
   if (editsSinceReview >= 5) add(70, 'code-review', `${editsSinceReview} files were edited and nothing has reviewed them yet.`)
   if (editsSinceReview >= 3) add(60, 'diff', 'See every change this chat made before you move on.')
+  if (errorsThisTurn >= 2 && editsSinceReview >= 1) add(58, 'rewind', 'Edits were made and errors followed. Rewind takes the chat back to before them.')
+  if (turns > 0 && turns % 10 === 0) add(35, 'stats', `${turns} turns in. Stats shows how this week's usage is trending.`)
   if (pct >= 45 && pct < 70) add(55, 'compact', `Context is ${Math.round(pct)}%. Compacting now, while the cache is warm, is cheaper than later.`)
   if (turns <= 1) add(40, 'context', 'See what is already loaded in this chat before you start.')
   if (turns > 1) add(30, 'btw', 'Ask a side question without pulling Claude off the task.')
@@ -333,7 +335,8 @@ export const register: Register = on => {
     if (!(await partOn($, NAME))) return next(e)
     const ui = $.ui.resolve(e)
     const { Box, Text, Button } = ui
-    const desktop = e.surface === 'desktop' || e.surface === 'mobile'
+    const desktop = (e.surface === 'desktop' || e.surface === 'mobile') && 'Svg' in ui
+    const width = Math.max(40, e.props.bodyColumns ?? e.viewport?.columns ?? 100)
     const b = (await $.state.get(BAR)).value ?? emptyBar()
     const { value: s } = await $.state.get(SUGGEST)
     const { value: hold } = await $.state.get(HOLD)
@@ -342,28 +345,72 @@ export const register: Register = on => {
     const { value: note = '' } = await $.state.get(NOTE)
     const { value: warmUntil = 0 } = await $.state.get(WARM_UNTIL)
     const showBar = await partOn($, NAME, 'bar')
-    const showFox = await partOn($, NAME, 'fox')
+    const showCrab = await partOn($, NAME, 'fox')
     const showSuggest = await partOn($, NAME, 'suggest')
     const mine: RenderChildren[] = []
+    const c = costs(b)
+    const ms = left(b)
+    const cold = isCold(b)
+    const mins = Math.max(0, Math.ceil(ms / 60_000))
+    const crab = (id: string, size = 24) =>
+      showCrab ? (desktop ? <ui.Svg source={crabSvg(size, ACCENT, { id })} alt="Claude crab" width={size} height={Math.round((size * 13) / 18)} /> : <Text>{crabGlyph()}</Text>) : null
 
-    // The hold card comes first: nothing else matters until it is answered.
-    if (hold) {
-      const ratio = hold.warmUsd > 0 ? Math.min(1, hold.warmUsd / Math.max(hold.nowUsd, 0.0001)) : 0.05
-      mine.push(
-        <Box key="hold" flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1}>
-          <Text bold color={ACCENT}>Your message is on hold</Text>
-          <Text dimColor>The cache went cold {hold.coldMins} min ago, so this chat ({tokenText(hold.tokens)} tokens) is read again in full.</Text>
+    // One card shape for the hold, the handoff and the guide: a small label, a title, a line under it.
+    const card = (key: string, title: string, sub: string, body: RenderChildren[]) => (
+      <Box key={key} flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1} gap={1}>
+        <Box flexDirection="row" columnGap={1} alignItems="center">
+          {crab(`sk-${key}`, 28)}
           <Box flexDirection="column">
-            <Text>
-              <Text color={STATUS.bad}>{'█'.repeat(24)}</Text> Send it now <Text bold>{money(hold.nowUsd)}</Text>
-            </Text>
-            <Text>
-              <Text color={STATUS.good}>{'█'.repeat(Math.max(1, Math.round(24 * ratio)))}</Text> A warm turn <Text bold>{money(hold.warmUsd)}</Text>
-            </Text>
+            <Text color={ACCENT} bold size="caption">SESSION KEEPER</Text>
+            <Text bold size="heading">{title}</Text>
+            {sub ? <Text dimColor>{sub}</Text> : null}
           </Box>
-          <Text dimColor>“{hold.text.length > 90 ? `${hold.text.slice(0, 89)}…` : hold.text}”</Text>
-          <Box flexDirection="row">
-            <Button key="pay" variant="primary" label={`Pay ${money(hold.nowUsd)} and send`} onPress={async () => {
+        </Box>
+        {body}
+      </Box>
+    )
+    // A thin bar: solid where filled, faint for the rest.
+    const line = (key: string, ratio: number, color: string, w: number) => {
+      if (desktop) return <ui.Svg key={key} source={barSvg(ratio, w * 7, 6, { color, id: key })} alt="" width={w * 7} height={6} />
+      const { fill, rest } = barCells(ratio, w)
+      return (
+        <Text key={key}>
+          <Text color={color}>{'━'.repeat(fill.length)}</Text>
+          <Text dimColor>{'─'.repeat(rest)}</Text>
+        </Text>
+      )
+    }
+    const ago = (m: number) => (m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}m` : `${m}m`)
+    const perM = b.tokens ? c.rewrite / (b.tokens / 1e6) : 0
+
+    // The hold comes first: nothing else matters until it is answered.
+    if (hold) {
+      const colW = Math.max(16, Math.floor((width - 8) / 2))
+      const ratio = hold.nowUsd > 0 ? Math.min(1, hold.warmUsd / hold.nowUsd) : 0.05
+      const col = (key: string, label: string, usd: number, color: string, r: number, sub: string) => (
+        <Box key={key} flexDirection="column" width={colW}>
+          <Text dimColor>{label}</Text>
+          <Text bold size="heading" color={color}>{money(usd)}</Text>
+          {line(`${key}-bar`, r, color, colW - 2)}
+          <Text dimColor size="caption" wrap="truncate-end">{sub}</Text>
+        </Box>
+      )
+      mine.push(
+        card('hold', 'Your message is on hold', `The prompt cache went cold ${ago(hold.coldMins)} ago.`, [
+          <Box key="costs" flexDirection="row" columnGap={2}>
+            {col('now', 'Send it now', hold.nowUsd, ACCENT, 1, `re-writes ${hold.tokens.toLocaleString('en-US')} tokens at $${perM.toFixed(perM < 1 ? 2 : 0)}/MTok`)}
+            {col('warm', 'A warm turn', hold.warmUsd, STATUS.good, ratio, 'what it would have cost')}
+          </Box>,
+          <Box key="lines" flexDirection="column">
+            <Text dimColor wrap="truncate-end">
+              <Text color={STATUS.warn}>⏸ </Text>On hold: “{hold.text.length > 80 ? `${hold.text.slice(0, 79)}…` : hold.text}”
+            </Text>
+            <Text dimColor>
+              <Text color={STATUS.good}>⛨ </Text>Pay once and Keep warm then holds the cache for {WARM_MAX / ONE_HOUR}h00m.
+            </Text>
+          </Box>,
+          <Box key="acts" flexDirection="row" columnGap={1}>
+            <Button key="pay" variant="primary" label="Pay and send" onPress={async () => {
               approved = hold.text
               await $.state.set(HOLD, null)
               await $.prompt.submit({ text: hold.text, asUser: true })
@@ -374,116 +421,143 @@ export const register: Register = on => {
               await $.state.set(NOTE, 'Your message is on the clipboard. Paste it into the fresh chat after the handoff.')
               await startHandoff($)
             }} />
-            <Button key="status" label="Cache status" onPress={() => $.state.set(EXPANDED, true)} />
-            <Button key="cancel" role="dismiss" label="Cancel" onPress={() => $.state.set(HOLD, null)} />
-          </Box>
-        </Box>,
+            <Button key="status" plain label="Show cache status" onPress={() => $.state.set(EXPANDED, true)} />
+            <Button key="cancel" plain dimColor role="dismiss" label="Cancel" onPress={() => $.state.set(HOLD, null)} />
+          </Box>,
+        ]),
       )
     }
 
     if (h) {
       const devices: Device[] = ['Mac mini', 'MacBook', 'iPhone']
-      mine.push(
-        <Box key="handoff" flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1}>
-          <Text bold color={ACCENT}>Handoff</Text>
-          {h.phase === 'pick' && <Text>Where will you pick this up? The handoff is written for that device.</Text>}
-          {h.phase === 'pick' && (
-            <Box flexDirection="row">
-              {devices.map(d => (
-                <Button key={`dev-${d}`} variant={d === 'Mac mini' ? 'primary' : undefined} label={d} onPress={() => void writeHandoff($, d)} />
-              ))}
-              <Button key="ho-cancel" role="dismiss" label="Cancel" onPress={() => $.state.set(HANDOFF, null)} />
-            </Box>
-          )}
-          {h.phase !== 'pick' && <Text dimColor>{h.note}</Text>}
-          {h.phase === 'ready' && (
-            <Box flexDirection="row">
-              <Button key="ho-go" variant="primary" label={h.device === 'Mac mini' ? 'Start the fresh chat' : 'Copy handoff'} onPress={() => void finishHandoff($, e.surface)} />
-              <Button key="ho-close" role="dismiss" label="Close" onPress={() => $.state.set(HANDOFF, null)} />
-            </Box>
-          )}
-          {h.phase === 'failed' && <Button key="ho-retry" label="Try again" onPress={() => void startHandoff($)} />}
+      const body: RenderChildren[] = []
+      if (h.phase === 'pick') body.push(
+        <Box key="devs" flexDirection="row" columnGap={1}>
+          {devices.map(d => <Button key={`dev-${d}`} variant={d === 'Mac mini' ? 'primary' : undefined} label={d} onPress={() => void writeHandoff($, d)} />)}
+          <Button key="ho-cancel" plain dimColor role="dismiss" label="Cancel" onPress={() => $.state.set(HANDOFF, null)} />
         </Box>,
       )
+      if (h.phase === 'ready') body.push(
+        <Box key="go" flexDirection="row" columnGap={1}>
+          <Button key="ho-go" variant="primary" label={h.device === 'Mac mini' ? 'Start the fresh chat' : 'Copy handoff'} onPress={() => void finishHandoff($, e.surface)} />
+          <Button key="ho-close" plain dimColor role="dismiss" label="Close" onPress={() => $.state.set(HANDOFF, null)} />
+        </Box>,
+      )
+      if (h.phase === 'failed') body.push(<Button key="ho-retry" label="Try again" onPress={() => void startHandoff($)} />)
+      mine.push(card('handoff', 'Handoff', h.phase === 'pick' ? 'Where will you pick this up? The handoff is written for that device.' : h.note, body))
     }
 
-    if (showBar && b) {
-      const c = costs(b)
-      const ms = left(b)
-      const cold = isCold(b)
-      const mins = Math.max(0, Math.ceil(ms / 60_000))
+    const nice = (cmd: string) => (cmd === 'keepwarm' ? 'Keep warm' : cmd.charAt(0).toUpperCase() + cmd.slice(1).replace(/-/g, ' '))
+
+    if (showBar) {
       const cacheColor = cold ? STATUS.bad : mins <= 2 ? STATUS.warn : STATUS.good
       const cacheText = !b.lastEnd ? 'cache ready' : cold ? 'cache cold' : `cache warm ${mins}m`
-      const fox = showFox ? (desktop && 'Svg' in ui ? <ui.Svg source={crabSvg(24, ACCENT, { id: 'skcrab' })} alt="Claude crab" width={24} height={17} /> : <Text>{crabGlyph()}</Text>) : null
+      const sep = <Text dimColor>{' │ '}</Text>
       mine.push(
-        <Box key="bar" flexDirection="row" alignItems="center" columnGap={1}>
-          {fox}
-          <Text color={cacheColor} bold>{cacheText}</Text>
-          {warmUntil > Date.now() && <Text color={STATUS.info}>· keeping warm</Text>}
-          <Text dimColor>· ctx</Text>
-          <Text color={b.percent >= 70 ? STATUS.bad : b.percent >= 50 ? STATUS.warn : undefined}>{Math.round(b.percent)}%</Text>
-          <Text dimColor>· rewrite ≈</Text>
-          <Text color={cold ? STATUS.bad : undefined}>{money(c.rewrite)}</Text>
-          <Text dimColor>· session</Text>
-          <Text>{money(b.sessionUsd)}</Text>
-          {b.fiveHour !== null && <Text dimColor>· 5 hrs {Math.round(b.fiveHour)}%</Text>}
-          {b.week !== null && <Text dimColor>· week {Math.round(b.week)}%</Text>}
-          {showSuggest && s && <Button key="smart" variant="primary" label={s.main.label === '/handoff' ? 'Handoff' : s.main.label === '/compact' ? 'Compact' : s.main.label === '/keepwarm' ? 'Keep warm' : s.main.label} onPress={() => void runCommand($, s.main.command)} />}
-          <Button key="toggle" plain label={open ? '▴' : '▾'} onPress={() => $.state.set(EXPANDED, !open)} />
-        </Box>,
-      )
-      if (showSuggest && s && !open) mine.push(<Text key="why" dimColor>Why {s.main.label}: {s.main.why}</Text>)
-    }
-
-    if (open && b) {
-      const width = e.props.bodyColumns ?? e.viewport?.columns ?? 100
-      const cols = width >= 120 ? 4 : width >= 84 ? 3 : 2
-      const cell = Math.max(18, Math.floor((width - 4) / cols) - 2)
-      mine.push(
-        <Box key="guide" flexDirection="column" borderStyle="round" borderColor={ACCENT} paddingX={1}>
-          {s && (
-            <Box flexDirection="column">
-              <Text bold color={ACCENT}>Best move now: {s.main.label}</Text>
-              <Text>{s.main.why}</Text>
-              {s.others.map(o => (
-                <Text key={`o-${o.command}`} dimColor>Also: {o.label}: {o.why}</Text>
-              ))}
-            </Box>
-          )}
-          <Text dimColor>Cache {b.ttlKnown ? (b.ttlMs >= ONE_HOUR ? '1 hour' : '5 min') : '5 min (guess until the first reply)'} · {tokenText(b.tokens)} tokens · model {b.model || 'unknown'} · a warm turn ≈ {money(costs(b).warm)}</Text>
-          {GROUPS.map(g => {
-            const items = g.items.filter(([cmd]) => available.size === 0 || available.has(cmd))
-            if (items.length === 0) return null
-            const rows: [string, string][][] = []
-            for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols))
-            return (
-              <Box key={`g-${g.title}`} flexDirection="column">
-                <Text bold color={g.color}>● {g.title}</Text>
-                {rows.map((row, ri) => (
-                  <Box key={`r-${g.title}-${ri}`} flexDirection="row" columnGap={2}>
-                    {row.map(([cmd, what]) => (
-                      <Box key={`c-${cmd}`} width={cell}>
-                        <Button key={`cmd-${cmd}`} plain onPress={() => void runCommand($, cmd)}>
-                          <Text color={g.color}>/{cmd}</Text> <Text dimColor>{what.length > cell - cmd.length - 3 ? `${what.slice(0, Math.max(4, cell - cmd.length - 4))}…` : what}</Text>
-                        </Button>
-                      </Box>
-                    ))}
-                  </Box>
-                ))}
-              </Box>
-            )
-          })}
-          <Box flexDirection="row">
-            <Button key="g-handoff" label="Handoff" onPress={() => void startHandoff($)} />
-            <Button key="g-warm" label="Keep warm" onPress={() => void keepWarm($)} />
-            <Button key="g-close" role="dismiss" label="Close" onPress={() => $.state.set(EXPANDED, false)} />
+        <Box key="bar" flexDirection="row" alignItems="center" justifyContent="space-between" width={width}>
+          <Box flexDirection="row" alignItems="center" columnGap={1}>
+            {crab('sk-bar')}
+            <Text wrap="truncate-end">
+              <Text color={cacheColor}>● </Text>
+              <Text color={cacheColor} bold>{cacheText}</Text>
+              {warmUntil > Date.now() ? <Text color={STATUS.info}> · keeping warm</Text> : null}
+              {sep}
+              <Text dimColor>ctx </Text>
+              <Text color={b.percent >= 70 ? STATUS.bad : b.percent >= 50 ? STATUS.warn : undefined}>{tokenText(b.tokens)}</Text>
+              <Text dimColor>{` (${Math.round(b.percent)}%)`}</Text>
+              {sep}
+              <Text dimColor>rewrite ≈ </Text>
+              <Text color={cold ? STATUS.bad : undefined}>{money(c.rewrite)}</Text>
+              {b.fiveHour !== null || b.week !== null ? sep : null}
+              {b.fiveHour !== null ? <Text dimColor>{`5h ${Math.round(b.fiveHour)}%`}</Text> : null}
+              {b.fiveHour !== null && b.week !== null ? <Text dimColor> · </Text> : null}
+              {b.week !== null ? <Text dimColor>{`week ${Math.round(b.week)}%`}</Text> : null}
+              {sep}
+              <Text dimColor>session </Text>
+              <Text>{money(b.sessionUsd)}</Text>
+            </Text>
+          </Box>
+          <Box flexDirection="row" alignItems="center" columnGap={1}>
+            {showSuggest && s ? <Button key="smart" variant="primary" label={nice(s.main.command)} onPress={() => void runCommand($, s.main.command)} /> : null}
+            <Button key="toggle" plain label={open ? '▴' : '▾'} onPress={() => $.state.set(EXPANDED, !open)} />
           </Box>
         </Box>,
       )
+      if (showSuggest && s && !open) mine.push(
+        <Text key="why" dimColor wrap="truncate-end">
+          <Text dimColor>next: </Text>
+          <Text color={ACCENT} bold>{nice(s.main.command)}</Text>
+          <Text dimColor>{` · ${s.main.why}`}</Text>
+        </Text>,
+      )
+    }
+
+    if (open) {
+      const cols = width >= 120 ? 4 : width >= 84 ? 3 : 2
+      const cell = Math.floor((width - 4 - 2 * (cols - 1)) / cols)
+      const body: RenderChildren[] = []
+      if (s) {
+        const tips: Tip[] = [s.main, ...s.others]
+        body.push(
+          <Box key="next" flexDirection="column">
+            <Text dimColor>next:</Text>
+            {tips.map((t, i) => (
+              <Box key={`n-${t.command}`} flexDirection="row" columnGap={1}>
+                <Text dimColor>{` ${i + 1} `}</Text>
+                <Box width={14} flexShrink={0}>
+                  <Button key={`tip-${t.command}`} plain onPress={() => void runCommand($, t.command)}>
+                    <Text color={i === 0 ? ACCENT : undefined} bold={i === 0}>{nice(t.command)}</Text>
+                  </Button>
+                </Box>
+                <Text dimColor wrap="truncate-end">{t.why}</Text>
+              </Box>
+            ))}
+          </Box>,
+        )
+      }
+      body.push(
+        <Box key="status" flexDirection="row" columnGap={2}>
+          <Text dimColor>{`Cache ${b.ttlKnown ? (b.ttlMs >= ONE_HOUR ? '1 hour' : '5 min') : '5 min (guess until the first reply)'}`}</Text>
+          <Text dimColor>{`${tokenText(b.tokens)} tokens`}</Text>
+          <Text dimColor>{`model ${b.model || 'unknown'}`}</Text>
+          <Text dimColor>{`a warm turn ≈ ${money(c.warm)}`}</Text>
+        </Box>,
+      )
+      for (const g of GROUPS) {
+        const items = g.items.filter(([cmd]) => available.size === 0 || available.has(cmd))
+        if (items.length === 0) continue
+        const rows: [string, string][][] = []
+        for (let i = 0; i < items.length; i += cols) rows.push(items.slice(i, i + cols))
+        body.push(
+          <Box key={`g-${g.title}`} flexDirection="column">
+            <Text bold color={g.color}>{`● ${g.title}`}</Text>
+            {rows.map((row, ri) => (
+              <Box key={`r-${g.title}-${ri}`} flexDirection="row" columnGap={2}>
+                {row.map(([cmd, what]) => (
+                  <Box key={`c-${cmd}`} flexDirection="column" width={cell}>
+                    <Button key={`cmd-${cmd}`} plain onPress={() => void runCommand($, cmd)}>
+                      <Text color={g.color} bold>{`/${cmd}`}</Text>
+                    </Button>
+                    <Text dimColor size="caption" wrap="truncate-end">{what}</Text>
+                  </Box>
+                ))}
+              </Box>
+            ))}
+          </Box>,
+        )
+      }
+      body.push(
+        <Box key="acts" flexDirection="row" columnGap={1}>
+          <Button key="g-handoff" label="Handoff" onPress={() => void startHandoff($)} />
+          <Button key="g-warm" label="Keep warm" onPress={() => void keepWarm($)} />
+          <Button key="g-close" plain dimColor role="dismiss" label="Close" onPress={() => $.state.set(EXPANDED, false)} />
+        </Box>,
+      )
+      mine.push(card('guide', s ? `Best move now: ${nice(s.main.command)}` : 'Command guide', s ? s.main.why : 'Every command this Claude Code has, by what it is for.', body))
     }
 
     if (note) mine.push(
-      <Box key="note" flexDirection="row">
+      <Box key="note" flexDirection="row" columnGap={1}>
         <Text dimColor>{note}</Text>
         <Button key="note-x" plain label="×" onPress={() => $.state.set(NOTE, '')} />
       </Box>,
@@ -491,7 +565,7 @@ export const register: Register = on => {
 
     const rest = await next(e)
     if (mine.length === 0) return rest
-    return roomy(<Box flexDirection="column">{rest}{mine}</Box>, e.surface)
+    return roomy(<Box flexDirection="column" gap={desktop ? 1 : 0}>{rest}{mine}</Box>, e.surface)
   })
 }
 

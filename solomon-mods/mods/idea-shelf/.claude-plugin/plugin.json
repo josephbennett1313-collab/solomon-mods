@@ -1,0 +1,11 @@
+{
+  "name": "idea-shelf",
+  "version": "2.0.0",
+  "description": "Idea Shelf: Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods",
+  "types": "./types/index.d.ts"
+}

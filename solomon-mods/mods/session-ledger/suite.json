@@ -1,0 +1,16 @@
+{
+  "title": "Session Ledger",
+  "what": "In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
+  "command": "/ledger \u00b7 /report",
+  "pane": true,
+  "parts": [
+    {
+      "key": "autoopen",
+      "label": "Open the pane by itself"
+    },
+    {
+      "key": "report",
+      "label": "Today's Report tab"
+    }
+  ]
+}

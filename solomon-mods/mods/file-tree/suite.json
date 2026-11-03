@@ -1,0 +1,16 @@
+{
+  "title": "File Tree",
+  "what": "A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
+  "command": "/files",
+  "pane": true,
+  "parts": [
+    {
+      "key": "tree",
+      "label": "Folder tree"
+    },
+    {
+      "key": "autoopen",
+      "label": "Open the tab when Claude starts editing"
+    }
+  ]
+}

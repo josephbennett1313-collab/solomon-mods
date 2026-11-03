@@ -1,0 +1,24 @@
+{
+  "title": "Helper Desk",
+  "what": "A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+  "command": "/helpers \u00b7 /team",
+  "pane": true,
+  "parts": [
+    {
+      "key": "cards",
+      "label": "A card per helper agent"
+    },
+    {
+      "key": "todos",
+      "label": "Saved to-do list"
+    },
+    {
+      "key": "dock",
+      "label": "Team size and helper model for the next request"
+    },
+    {
+      "key": "autoopen",
+      "label": "Open the tab by itself when helpers start"
+    }
+  ]
+}

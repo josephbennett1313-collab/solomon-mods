@@ -6,7 +6,7 @@ export type Group = { title: string; color: string; items: [string, string][] }
 export const GROUPS: Group[] = [
   {
     title: 'Save tokens',
-    color: '#E8452C',
+    color: '#F0603A',
     items: [
       ['compact', 'Shrink the chat into a summary and keep going'],
       ['autocompact', 'Set when the chat compacts on its own'],

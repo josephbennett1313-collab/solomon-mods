@@ -1,0 +1,116 @@
+<h1>Mods – Master Inventory &amp; Rebuild Plan</h1>
+<div>Built Nov 2, 2026 from the Mods, Claude Code Mods – Tracker and Solomon’s Agentic Abilities – MacBook notes, checked against what is actually installed on the Mac mini.</div>
+<div><br></div>
+
+<h2>Bottom line</h2>
+<ul>
+<li><b>24 mods installed. 21 are on, 3 are switched off.</b> Plus 1 built into Claude Code (You Should Know).</li>
+<li><b>11 are yours</b> (Solomon Suite). <b>10 are downloaded and still running.</b> 3 downloaded ones are off because your suite replaced them.</li>
+<li><b>Nothing is on GitHub yet.</b> Your GitHub has only Solomon and solomon-tickets.</li>
+<li><b>Risk:</b> 7 mod sources point to ~/Projects/claude-mods, which does not exist on the Mac mini (it was built on the MacBook). The mods still run from a saved copy, but they cannot be updated or reinstalled here. Moving them to GitHub fixes this on both Macs.</li>
+</ul>
+<div><br></div>
+
+<h2>1. Your Solomon Suite (11 mods, on)</h2>
+<div>What it does / what it piggybacks on</div>
+<ul>
+<li><b>Mission Control</b> – task bar and /goal meter above the prompt, a live card per helper agent, plain-English activity feed with time saved. <i>Built from: Helper Desk (Ben AI), Savvy Progress, Agent Narrator, Goal Meter idea (Nate Herk).</i></li>
+<li><b>Session Keeper</b> – cache clock with Keep Warm, and one-click Handoff that moves a long chat into a fresh one. <i>Built from: Cache Clock + Handoff (Ben AI).</i></li>
+<li><b>Prompt Forge</b> – turns a long brain dump into a clear brief, suggests a sharper version of a vague prompt, /forge upgrades any prompt. You always choose. <i>Built from: Brain Dump (Ben AI), Prompt Coach.</i></li>
+<li><b>Rule Keeper</b> – turns your corrections into rules (this chat, every chat, or your vault) and pins notes and to-dos above the prompt. <i>Built from: Reflect (Ben AI), Pin Memo.</i></li>
+<li><b>Chat Ledger</b> – what this chat used (to-dos, connectors, files, skills) and Today’s Report of tasks, hours saved and dollar value. <i>Built from: Chat Inventory (Ben AI), Today’s Report idea (Tristen O’Brien).</i></li>
+<li><b>Mod Switchboard</b> – /mods turns each mod, or one part of it, on or off. <i>Built from: Switchboard (Ben AI).</i></li>
+<li><b>Edit Rewind</b> – step through last turn’s edits, undo a turn, full snapshot timeline to restore or branch. <i>Built from: Time Machine, Replay Theater (Anthropic sample).</i></li>
+<li><b>Privacy Shield</b> – greys out names, emails, phones and amounts while you share your screen; keeps keys out of what Claude reads; blocks .env and SSH key files. <i>Built from: Screen-Share Mode (Ben AI), Secret Redactor.</i></li>
+<li><b>Assumption Radar</b> – lists decisions Claude made without asking and the assumptions it made, so you mark each right or wrong. <i>Built from: Critical Decisions, Assumption Check idea (AI Labs).</i></li>
+<li><b>Auto Model</b> – Sonnet for normal work, your chosen model for deep work; only switches at chat start or cold cache. <i>Idea: Tristen O’Brien.</i></li>
+<li><b>Design Picker</b> – /styles shows each design style as a preview before you pick. <i>Idea: AI Labs; styles from UI UX Pro Max.</i></li>
+</ul>
+<div>Your settings show Mission Control and Chat Ledger panels set to hidden – a sign they felt noisy. The UI section below addresses that.</div>
+<div><br></div>
+
+<h2>2. Downloaded mods still running (10)</h2>
+<div>What it does / licence / rebuild plan</div>
+<ul>
+<li><b>Token Optimizer</b> (alexgreensh) – health bar above the prompt: Quality grade, Context %, Cache minutes, 5-hr and Week usage, plus Clean Up, Start Fresh, Keep Warm buttons. <i>Licence: PolyForm Noncommercial (small-business add-on).</i> → Rebuild from scratch, no copied code, into <b>Session Keeper v2</b>.</li>
+<li><b>Token Weather</b> (Anthropic sample) – weather icon and chart of how full the context is. Not in your notes before. → Fold into <b>Session Keeper v2</b> (it repeats Token Optimizer).</li>
+<li><b>Agent Usage Guard</b> (rbartoli) – stops runaway helper agents, huge prompts and retry loops before they burn your Pro limits. <i>MIT.</i> → Rebuild as <b>Limit Guard</b>.</li>
+<li><b>Blast Radius</b> (Anthropic sample) – holds risky commands (rm -rf, force push, resets) with Proceed and Cancel. → Rebuild as <b>Command Guard</b>.</li>
+<li><b>Human in the Loop</b> (tzafrir) – tasks only you can do (logins, approvals) wait in a My Tasks pane. <i>MIT.</i> → Rebuild as <b>My Tasks</b>.</li>
+<li><b>After</b> (midudev) – /after queues the next prompt to run when the current task ends. → Fold into <b>Prompt Forge v2</b>.</li>
+<li><b>remcycle</b> (lianmatsuo) – daily memory clean-up, search past sessions, rule on stale notes. <i>Apache 2.0.</i> → Fold into <b>Rule Keeper v2</b> (one place for memory and rules).</li>
+<li><b>Slopless</b> (gondar) – blocks AI-sounding X and LinkedIn posts when Claude writes in Chrome. <i>MIT.</i> → Rebuild as <b>Voice Guard</b>, tied to your brand voice for Captivia and Blue Ocean.</li>
+<li><b>Lighthouse Run</b> (plagemes) – /lighthouse scores a website’s speed, SEO and accessibility. → Rebuild as <b>Site Check</b>.</li>
+<li><b>Codex</b> (OpenAI) – second opinion from ChatGPT’s Codex: /codex:review, adversarial review, rescue; review gate on for Captivia. <i>Apache 2.0.</i> → <b>Keep as is.</b> It is a bridge to OpenAI’s service; rebuilding adds nothing.</li>
+</ul>
+<div><br></div>
+
+<h2>3. Switched off (3) – already replaced by your suite</h2>
+<ul>
+<li>Agent Narrator → Mission Control</li>
+<li>Prompt Coach → Prompt Forge</li>
+<li>Secret Redactor → Privacy Shield</li>
+</ul>
+<div>Safe to uninstall once the GitHub version is live.</div>
+<div><br></div>
+
+<h2>4. Built in (nothing to rebuild)</h2>
+<ul><li><b>You Should Know</b> (Anthropic) – flags important things you might miss in a note above the prompt.</li></ul>
+<div><br></div>
+
+<h2>5. Everything you piggyback on (credit list)</h2>
+<ul>
+<li><b>Ben AI mod pack</b> (9): Brain Dump, Helper Desk, Cache Clock, Handoff, Reflect, Chat Inventory, Screen-Share Mode, Replay Theater, Switchboard. <i>No licence = personal use only. Keep the repo private.</i></li>
+<li><b>Uninstalled originals:</b> Savvy Progress, Pin Memo, Time Machine, Critical Decisions, Agent Narrator, Prompt Coach, Secret Redactor.</li>
+<li><b>Ideas from videos:</b> Goal Meter (Nate Herk), Auto Model and Today’s Report (Tristen O’Brien), Design Picker and Assumption Check (AI Labs).</li>
+<li><b>Still running:</b> the 10 in section 2.</li>
+<li><b>Checked and skipped:</b> Image View, Vercel Deploy Status, Glance, Stock Watch, Terminal Browser, File Tree, Claude Console, Skins, Effortless, Screen Guard, Cache Tax.</li>
+</ul>
+<div><br></div>
+
+<h2>6. Rebuild plan – Solomon Suite v2 on GitHub</h2>
+<div><b>Recommendation:</b> one private GitHub repo, <b>solomon-mods</b>, set up as a mod marketplace. Both Macs install from it, so updates reach both and nothing depends on a local folder.</div>
+<div><br></div>
+<div><b>Result: 16 of your own mods + Codex replace all 24 installed.</b></div>
+<ul>
+<li>Keep (9): Mission Control, Chat Ledger, Mod Switchboard, Edit Rewind, Privacy Shield, Assumption Radar, Auto Model, Design Picker, plus Codex as is</li>
+<li>Upgrade (3): Session Keeper v2 (+ Token Optimizer bar, Token Weather), Prompt Forge v2 (+ After queue), Rule Keeper v2 (+ remcycle memory)</li>
+<li>New (5): Limit Guard, Command Guard, My Tasks, Voice Guard, Site Check</li>
+</ul>
+<div><b>Order:</b></div>
+<ol>
+<li>Copy the 11 Solomon Suite mods from the saved copies on the Mac mini into the new repo. (Or from ~/Projects/claude-mods on the MacBook if it is newer.)</li>
+<li>Build the 3 upgrades – they touch what you see every session.</li>
+<li>Build the 5 new mods, rewritten in your own code (not copied), same Solomon look.</li>
+<li>Test each for a week, then uninstall the downloaded original.</li>
+</ol>
+<div>Trade-off: owning everything means you also own the fixes. When Anthropic changes the mod system, your mods break until Claude repairs them; downloaded ones get fixed by their authors.</div>
+<div><br></div>
+
+<h2>7. What a new session should look like – suggestions</h2>
+<div><b>Idea: one Start Deck above the prompt</b> that shows only what matters when a chat opens, then shrinks to a single line after your first message.</div>
+<div><br></div>
+<div><b>Row 1 – always on (one line)</b></div>
+<div>Solomon · Mac mini · Sonnet · Quality A · Context 3% · Week 38% · 21 mods on [Mods]</div>
+<div><br></div>
+<div><b>Row 2 – Pick up where you left off (only if something is waiting)</b></div>
+<div>Last handoff: “Fire rebuild invoice” [Resume] · 2 tasks waiting on you [Open] · 1 queued prompt · 3 memory rulings</div>
+<div><br></div>
+<div><b>Row 3 – Quick starts</b></div>
+<div>[Captivia] [Blue Ocean] [Ophir] [Real estate] [Solomon build] – each loads that project’s folder, rules and connectors.</div>
+<div><br></div>
+<div><b>Rules for the deck</b></div>
+<ul>
+<li>Quiet by default: panels like Mission Control and Chat Ledger open only when helpers start or you click.</li>
+<li>One alert at a time, colour-coded: orange = needs you, grey = info.</li>
+<li>Crab orange accent, big tap targets, readable on your phone.</li>
+<li>Privacy Shield button on the deck for one-tap screen-share mode.</li>
+<li>Every number on the deck is clickable and explains itself in plain English.</li>
+</ul>
+<div><br></div>
+
+<h2>Decisions for you</h2>
+<ul>
+<li>Create the private solomon-mods repo on GitHub?</li>
+<li>Build the Start Deck first, or the 3 upgrades first?</li>
+</ul>

@@ -1,0 +1,161 @@
+Claude Code Mods – Tracker
+
+Mods change how Claude Code looks and behaves. Installed at user level, so every Claude Code session loads them. Reach = how much a mod can touch (0 draws only, 1 reads, 2 writes or runs, 3 network). Claude Code 2.1.308. Updated Oct 23, 2026.
+
+______________________________________________________________________________________
+
+Installed – Oct 23, 2026 (17 total)
+
+Interface
+
+Show / Live Progress Bars for Helper Agents (reach 2) - Savvy Progress
+
+Flag / Important Things You Might Miss, as a Note Above the Prompt (built-in, no tools) - You Should Know (Anthropic)
+
+Narrate / Every Step in Plain English, With a Time-Saved Counter (reach 2; small model call) - Agent Narrator
+
+Pin / Memos and Clickable To-Do Checkboxes Above the Prompt (reach 0, local only) - Pin Memo
+
+Building & Vibecoding
+
+Undo / Timeline of Every Change With Snapshots; Explains Test Failures (reach 2, 1,126 stars) - Time Machine
+
+Queue / Next Prompts to Run After the Current Task: /after (reach 2; Haiku call) - After
+
+Sharpen / Vague Prompts Before They Send (reach 2; small model call) - Prompt Coach
+
+Score / Website Speed, SEO & Accessibility: /lighthouse <url> (reach 3; first run downloads Lighthouse) - Lighthouse Run
+
+Marketing
+
+Block / AI-Sounding X & LinkedIn Posts When Claude Writes in Chrome (reach 3, reads Chrome tabs) - Slopless
+
+Cost & Usage
+
+Watch / Session Health Bar: Quality Grade, Context, Cache Timer, Usage Limits, One-Click Fix (reach 2) - Token Optimizer
+
+Stop / Runaway Subagents, Huge Prompts & Retry Loops Before They Burn Pro Limits (reach 2, no network) - Agent Usage Guard
+
+Safety & Control
+
+Hold / Risky Shell Commands (rm -rf etc.) With Proceed & Cancel (reach 2) - Blast Radius (Anthropic)
+
+Hide / API Keys and Passwords in Tool Output From Claude (reach 0) - Secret Redactor
+
+Queue / Tasks Only You Can Do (logins, passwords, approvals) in a Pane (reach 2, no network) - Human in the Loop
+
+List / Decisions Claude Made Without Asking (/critical-list) (reach 2, no network) - Critical Decisions
+
+Memory
+
+Clean Up / Memory Daily, Search Past Sessions, Rule on Stale Notes: /remcycle (daily run uses your plan) - remcycle
+
+Second Opinion
+
+Review / Claude's Work With Codex: /codex:review, /codex:adversarial-review, /codex:rescue (uses ChatGPT limits) - Codex Plugin (OpenAI)
+
+Auto-Check / Every Claude Reply Before It Finishes (review gate; burns limits) - ON for Captivia. Saved per folder: run /codex:setup --enable-review-gate once per new project
+
+______________________________________________________________________________________
+
+Checked and Skipped
+
+Image View - only draws in Ghostty or kitty, not the desktop app
+Vercel Deploy Status - Captivia is not linked to Vercel
+Glance - needs Slack, Linear and GitHub sign-ins
+Stock Watch - unofficial Yahoo price feed; alert sound only on Windows
+Terminal Browser - needs Ghostty or kitty; use the desktop app's Browser pane
+Replay Theater - removed Oct 23: Time Machine and the app's Diff pane cover it
+File Tree - removed Oct 23: the desktop app has its own Files pane
+Claude Console - removed Oct 23: its pop-ups and board are only in Chinese, no English setting. Blast Radius covers risky commands in English
+Skins - removed Oct 23: only changed the look; its usage meters repeated Token Optimizer's
+Effortless - overlaps Token Optimizer
+Screen Guard - sends on-screen names to TypeSafe's cloud
+Cache Tax, Reflect - replaced by Token Optimizer and remcycle
+Graphic design - no useful mods found (229 matches, mostly pixel pets and color themes)
+
+______________________________________________________________________________________
+
+How It Works
+
+Browse / 6,750 Entries (5,796 Usable Mods) With Reach Ratings - awesome-claude-code-mods
+
+Token Optimizer Bar (above the prompt)
+Quality (S best to F) - how clear the conversation still is to Claude. C is 55-69; long, cluttered sessions lower it
+Context % - how full Claude's working memory is. Under 50% is fine; past about 70% it starts losing earlier details
+Cache (minutes) - time left to pick the conversation back up cheaply. Away longer, the next message uses more of your allowance to reload
+5 hours % - share of your rolling 5-hour usage allowance used
+Week % - share of your weekly allowance used. The one to watch: when it runs out you wait for the weekly reset
+
+Clean Up / Same as /compact - shrinks the conversation into a summary and keeps going in the same session. Use when quality drops to D or context passes about 70%
+
+Start Fresh / New Chat With Notes - saves a summary, wipes the conversation, and hands the summary to Claude with your next message. Asks for a second click. Use when switching to a different task
+
+Keep Warm / Reset the Cache Timer - uses a tiny bit of usage. Only worth it if you are stepping away and coming back to the same conversation
+
+Reload / Mods in an Open Session - type /reload-plugins (new sessions load them on their own)
+
+Keep / ~/Projects/claude-mods Folder - holds Blast Radius, Secret Redactor, Agent Narrator, Prompt Coach, Lighthouse Run, Slopless; deleting it breaks them
+
+Remove / A Mod - /plugin uninstall name@marketplace
+
+______________________________________________________________________________________
+
+______________________________________________________________________________________
+Queued to Build – from Oct 23 videos (not installed yet)
+Mod packs are behind email sign-ups or a paid community, so Claude builds these from prompts with the plugin-authoring skill. Install waits for your yes.
+Track / Goal Meter: Plan, Time and Checkmarks for /goal Tasks - Nate Herk
+Structure / Brain Dump: Long Voice Dumps Into Clean Prompts (only long dumps; Prompt Coach keeps short ones) - Ben AI
+Move / Handoff: Handoff File + Fresh Session Any Harness Can Read (close to Token Optimizer Start Fresh) - Ben AI
+Save / Reflect: Confirm New Rules and Save Them (removed earlier for remcycle; brought back by request) - Ben AI
+List / Chat Inventory: Tools, Files and Skills Used, in a Side Panel - Ben AI
+Toggle / Switchboard: Turn Mods On and Off From One Panel - Ben AI
+Pick / Auto Model: Right Model per Prompt (only switches at chat start or cold cache, so the cache is not wasted) - Tristen O'Brien
+Report / Today's Report: Tasks, Hours Saved, Dollar Value by Day/Week/Month - Tristen O'Brien
+Choose / Design Picker: See Each Style Before You Pick - AI Labs
+Check / Assumption Check: Mark Claude's Assumptions Right or Wrong (overlaps Critical Decisions; keep the better one after a week) - AI Labs
+Already have / Helper Desk = Savvy Progress agents panel (/agents-info)
+Skipped by you / Record Mode, YouTube TV, Daily Challenge, other AI Labs mods
+
+______________________________________________________________________________________
+BenAI Mod Pack – Reviewed Oct 23 (ready to install, waiting on your yes)
+From Ben AI's free download (benai-mods.zip, 9 mods). Code checked: no internet calls, no keys or passwords read, writes stay in ~/.claude/mods, mods-logs and handoffs.
+Install / Brain Dump (small model call; may double up with Prompt Coach on long prompts) - Ben AI
+Install / Helper Desk (task bar + live helper cards; covers Savvy Progress's agents panel) - Ben AI
+Install / Handoff (at 250k tokens opens a fresh chat with a handoff) - Ben AI
+Install / Reflect (saves rules to CLAUDE.md only when you press Save) - Ben AI
+Install / Chat Inventory - Ben AI
+Install / Switchboard (/mods) - Ben AI
+Skip / Cache Clock (Token Optimizer has it), Screen Share (no record mode), Replay Theater (removed Oct 23)
+Still to build: Goal Meter, Auto Model, Today's Report, Design Picker, Assumption Check
+
+______________________________________________________________________________________
+Solomon Suite – Built Oct 23 (tested, waiting on your yes to install)
+11 custom mods in ~/Projects/claude-mods/solomon-suite replace 21 overlapping ones. All pass validation and 44 tests. Not installed. Preview: claude.ai/artifact/SNteXmeSWw7CuYz744LY5s
+Build / Mission Control (Helper Desk + Savvy Progress + Agent Narrator + Goal Meter) - Solomon Suite
+Build / Session Keeper (Cache Clock + Handoff; clock off by default) - Solomon Suite
+Build / Prompt Forge (Brain Dump + Prompt Coach + /forge) - Solomon Suite
+Build / Rule Keeper (Reflect + Pin Memo) - Solomon Suite
+Build / Chat Ledger (Chat Inventory + Today's Report) - Solomon Suite
+Build / Mod Switchboard (Ben AI's /mods) - Solomon Suite
+Build / Edit Rewind (Time Machine + Replay Theater) - Solomon Suite
+Build / Privacy Shield (Screen Share + Secret Redactor; blocks .env and SSH keys) - Solomon Suite
+Build / Assumption Radar (Critical Decisions + Assumption Check) - Solomon Suite
+Build / Auto Model (Sonnet for normal tasks; switches only at chat start or cold cache) - Tristen O'Brien idea
+Build / Design Picker (style previews from UI UX Pro Max, /design) - AI Labs idea
+Keep / Token Optimizer, Blast Radius, Human in the Loop, Agent Usage Guard, Slopless, Codex, remcycle, After, Lighthouse Run
+Note / Ben AI's pack has no licence: suite mods built from it are personal use only
+Installed / Solomon Suite (all 11 mods, Oct 23; originals kept for now, remove after testing) - Solomon Suite
+Uninstalled / Agent Narrator, Savvy Progress, Prompt Coach, Pin Memo, Time Machine, Secret Redactor, Critical Decisions (replaced by Solomon Suite, Oct 23; their marketplaces removed too) - Solomon Suite
+Fixed / Design Picker (command is now /styles; /design belongs to Claude Code) - Solomon Suite
+Fixed / Solomon Suite bands and panes (desktop buttons overlapped; added gaps between rows and buttons, Oct 23) - Solomon Suite
+Changed / Solomon Suite (colour now crab orange; Plan bar reaches 100% when a task finishes, Oct 23) - Solomon Suite
+Tweaked / Token Optimizer (label 5 hours to 5 hrs in installed copy; an update undoes it) - alexgreensh
+Fixed / Assumption Radar (full sentences wrap instead of cutting off; bullet instead of ?, Oct 23) - Solomon Suite
+
+Oct 24
+Disable / Agent Narrator, Prompt Coach, Secret Redactor (replaced by Mission Control, Prompt Forge, Privacy Shield; not uninstalled) - Solomon Suite
+Update / All 11 Solomon Suite mods (installed copies were behind the source; now current, backup kept) - Solomon Suite
+Change / Mission Control (opens in every chat; Today's Report and Mods buttons) - Solomon Suite
+Fix / Token Optimizer ("5 hrs" stays on one line; an update would undo it) - alexgreensh
+

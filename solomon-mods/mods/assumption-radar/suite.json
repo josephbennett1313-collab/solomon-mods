@@ -1,0 +1,7 @@
+{
+  "title": "Assumption Radar",
+  "what": "Lists decisions Claude made without asking so you can mark each right or wrong",
+  "command": "/assumptions",
+  "pane": true,
+  "parts": []
+}

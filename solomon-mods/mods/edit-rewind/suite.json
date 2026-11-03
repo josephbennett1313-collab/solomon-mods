@@ -1,0 +1,17 @@
+{
+  "title": "Edit Rewind",
+  "what": "Step through a turn's edits, undo a turn, and restore from a snapshot timeline",
+  "command": "/rewind-edits \u00b7 /tm",
+  "pane": true,
+  "parts": [
+    {
+      "key": "hint",
+      "label": "Show the rewind hint above the prompt"
+    },
+    {
+      "key": "status",
+      "label": "Show edit count in the status line",
+      "default": false
+    }
+  ]
+}

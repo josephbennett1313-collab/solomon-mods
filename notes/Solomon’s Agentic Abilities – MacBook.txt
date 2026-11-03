@@ -1,0 +1,492 @@
+Solomon’s Agentic Abilities – MacBook
+
+This is the hands-on machine: you are at the keyboard, and Claude, ChatGPT, and Codex do the work.
+
+
+
+Battle Armor - AI Harnesses
+
+Strength / Weakness - Harness
+
+Builds code, runs scripts, hooks & subagents, works inside your Mac, apps & files, scheduled tasks / Terminal learning curve; Cowork only runs while the app is open - Claude Code + Claude Cowork 
+
+Company apps inside chat, images, voice, second opinion / Separate memory from Claude - ChatGPT + Codex 
+
+Massive context, video understanding, Google Workspace, several coding agents side by side / Fewer deep Mac controls; Antigravity still maturing, plan limits - Gemini + Google Antigravity 
+
+Always-on, remembers and learns, message it from your phone / Needs a dedicated machine, security risk - Hermes Agent (Mac mini only)
+
+Visual workflows, autonomous agents, and AI infrastructure maps / Needs Docker to self-host - Dify (Mac mini only)
+
+______________________________________________________________________________________
+
+
+Administrative
+
+
+Read, Edit, and Send / Email & Calendar - Spark Desktop MCP
+
+Read, Edit, and Create / iMessage & Apple Notes - Anthropic Extensions (MacBook only)
+
+Read, Edit, Send, Call, 3-Ways, and Coordinate / Agent Email, Text/iMessage, Calls, Phone Trees & Agent2Agent - Inkbox MCP
+
+Search, Draft, Reply, and Label emails - Spark Desktop MCP
+
+Post, Schedule, and Queue / Content Calendar (8 social platforms platforms, see Social Media section) - Blotato MCP
+
+Read, Edit, and Save / Document Creation - Claude Docs & Word (By Anthropic)
+
+Click, Edit, Scroll, and Save / Mac Files, Computer Use & Remote Mac Control - Desktop Commander MCP 
+
+Browse, Click, and Fill / Browser Control - Claude in Chrome
+
+Fill, Sign, Merge, Convert, and Compress / PDF Handling & File Conversion - PDF Tools
+
+Send, Track, and Download / E-Signature Requests (recipients, signing order, status, signed copies) - signNow MCP 
+
+Create and Reuse / Contract Templates & Document Groups - signNow MCP
+
+Embed / Signing Links for Your Website & Partner Portal - signNow MCP
+
+`
+______________________________________________________________________________________
+
+
+Social Media
+
+Write / Captions, Replies & Content Plans - Claude Cowork
+
+Publish, Schedule, and Queue / X, LinkedIn, Facebook, Instagram, TikTok, YouTube, Threads, Bluesky & Pinterest - Blotato MCP
+
+List, Edit, and Delete / Content Calendar (200 queued posts, up to 9 months ahead) - Blotato MCP
+
+Read, Reply, and Post Comments / Instagram & Facebook Pages - Blotato MCP
+
+Read and Send DMs / Instagram & Facebook (DM replies within 24 hours of their last message) - Blotato MCP 
+
+Create, Edit, and Log Auto-Replies / DM Automations, Instagram & Facebook (1,000/mo active contacts) - Blotato MCP 
+
+Create and Check / AI Visuals & Video (1,250/mo credits; extra 1,000 credits cost $6) - Blotato MCP 
+
+Measure / Post Analytics on 8 platforms (not LinkedIn) - Blotato MCP 
+
+
+Note: To fill the gaps: Ayrshare ($149 a month) adds comments on LinkedIn, X, TikTok, YouTube, and Reddit.
+
+
+
+Generate / AI Video Clips, Images & Short-Form Videos (text or image to video) - Higgsfield MCP
+
+Build and Reuse / A Consistent AI Character/Influencer (needs 20 to 80 photos) - Higgsfield MCP 
+
+Make / Product & Ad Creatives (Ads Studio) - Higgsfield MCP
+
+Lip-Sync / Pre-Recorded Talking-Avatar Clips (91 credits per 14-second clip) - Higgsfield MCP 
+
+Predict / Which Hooks Hold Attention Before You Post (virality predictor) - Higgsfield MCP
+
+Design / Branded Posts, Carousels, Thumbnails, Flyers & Decks - Canva MCP
+
+Resize / One Design Into Every Platform Size - Canva MCP
+
+Create in Bulk / Many Versions From a Table of Names or Offers - Canva MCP
+
+Check and Improve / Brand Consistency, Design Feedback & Edits - Canva MCP
+
+Speak / Voiceovers for Videos & Ads in Many Voices - ElevenLabs MCP
+
+Design and Save / A Brand Voice From a Text Description - ElevenLabs MCP
+
+Transcribe / Audio & Video Into Text for Captions and Repurposing - ElevenLabs MCP
+
+Generate / Images & Video Inside ElevenLabs Flows - ElevenLabs MCP (overlaps Higgsfield)
+
+Cut / Silences, Filler Words & Dead Air (smart cut) - Rendley MCP
+
+Caption / Auto-Captions From Speech With a Style You Pick - Rendley MCP
+
+Clean / Isolate a Voice, Remove a Background - Rendley MCP
+
+Assemble, Brand, and Export / Clips, Titles, Transitions, Brand Kit & Templates, Then the Final File - Rendley MCP
+
+______________________________________________________________________________________
+
+Lead Generation
+
+
+Find and Enrich
+
+Find and Enrich / Leads & Contacts - Apollo MCP, Lusha MCP, Crustdata MCP
+
+Find, Enrich, and Score / B2B Leads (ISOs, lenders, partners) - Clay MCP
+
+Find and Look Up / Company, Funding & Investor Data - Crunchbase MCP
+
+Find and Verify / Local Businesses With No Website or an Outdated One (Google Maps data) - BirdSift MCP
+
+Build and Publish / Forms, Quizzes & Intake - Typeform MCP (recommended; already connected)
+
+Read and Analyze / Responses & Trends - Typeform MCP
+
+Trigger / Emails & Webhooks When Someone Submits - Typeform MCP
+
+Backup / Forms (free: 5 forms, 100 submissions) - Jotform MCP
+
+
+Prospect Messaging - lemlist
+
+Visit, Invite, Message, and InMail / LinkedIn Step-by-Step Sequences - lemlist MCP
+
+Withdraw / Pending LinkedIn Invites Automatically (7 to 14 days after sending) - lemlist MCP
+
+Endorse / LinkedIn Skills - lemlist MCP
+
+Send / LinkedIn Voice Messages: Recorded & Uploaded Voice - lemlist MCP
+
+Email / Sequences With Warm-Up & Domain Setup - lemlist MCP
+
+Call, Text, and WhatsApp / Dialer With Recording & AI Summaries, SMS, WhatsApp (add-on) - lemlist MCP (for prospects inside a sequence; Solomon’s own calls and texts stay on Inkbox)
+
+Read and AI Replies / One Inbox for Email, LinkedIn, WhatsApp & SMS (plus call tasks) - lemlist MCP
+
+Create, Launch, Pause, and Report / Campaigns, Leads & Stats - lemlist MCP
+
+
+Email Deliverability
+
+Look Up / A & AAAA Records (Where a Domain Points) - DNS Inspector
+
+Check / MX Records (Where Mail Goes) - DNS Inspector
+
+Read / TXT Records for SPF, DKIM & DMARC (What Lets Emails Reach the Inbox) - DNS Inspector
+
+
+Best for people who own property: BatchData (works by API, so Solomon can run it; about $0.02 a record at its Growth tier and a 76% contact rate, both self-reported) and PropStream (about $0.12 a record). Best for everyday consumers and heirs (surplus funds, unclaimed life insurance): TransUnion TLOxp, IDI idiCORE or LexisNexis Accurint. They search by name, relatives and associates, not only by property. They are quote-based or pay-as-you-go, need an application and a legal purpose under federal rules (GLBA and DPPA), and are not connected to Claude. Plan: BatchData for anything tied to a property; apply for TLOxp or idiCORE when you take consumer heir cases. States cap or register finder fees on surplus funds, so ask an attorney before signing clients.
+
+Skip Trace by API / Owner Phones & Emails From a Property Address or Name - BatchData (price on request; its site lists a Claude connection, details not checked)
+
+Enrich in Bulk / A Whole List of Owners at Once - BatchData
+
+Pull / Owner Lists for Wholesale Leads (Recommended for wholesaling) - PropStream
+
+Skip Trace / Owners Found in a Search, About $0.12 a Record, or Unlimited With a $27 Add-On - PropStream
+
+Export / Lists to Clay or a Spreadsheet - PropStream (not checked)
+
+Locate / Heirs, Relatives & Associates of a Person - TransUnion TLOxp, IDI idiCORE, LexisNexis Accurint (apply only when you take heir cases)
+
+Find and Verify / Current Phones, Emails & Addresses of Everyday People - TransUnion TLOxp, IDI idiCORE, LexisNexis Accurint
+
+Check / Deceased Status and Address History - TransUnion TLOxp, IDI idiCORE, LexisNexis Accurint (vetting and a signed use agreement required)
+
+Also checked: REISkip (about $0.10 to $0.15 a record; bulk property lists, no API).
+
+Find Lists, Then Skip Trace / Surplus Funds & Unclaimed Life Insurance - County/state lists (Apify scrapers) + BatchData - states limit finder fees and some require registration; ask an attorney before signing clients
+
+______________________________________________________________________________________
+
+
+Marketing & Advertising
+
+
+Search and Compare / Competitor Ads on Meta & TikTok, Brand Stats - AdWhispr MCP
+
+Write / Competitor Briefs: Top Hooks, Longest-Running Winners & Format Mix - AdWhispr MCP
+
+Turn Into a Script / A Competitor’s TikTok Ad Into a Shoot-Ready Script With Your Product - AdWhispr MCP
+
+Research, Launch, Pause, and Change Budgets / Meta, Google Search, Performance Max & TikTok Campaigns - AdWhispr MCP
+
+
+______________________________________________________________________________________
+
+Research
+
+Search, Extract, and Cite / Deep Web Research - Parallel AI MCP
+
+Browse, Log In, Extract, and Monitor / Web Automation, Data Extraction & Page Monitoring - TinyFish MCP
+
+Ground and Study / Source-Only Research - NotebookLM (Recommended)
+
+Scrape, Collect, and Schedule / Raw Data in Bulk Into a Spreadsheet: Google Maps Businesses, Property Listings, Social Posts & Lead Lists - Apify MCP
+
+Summarize and Cite / One YouTube Video, Web Page, Document or Audio File Into Readable Notes With Timestamped Sources - Lilys AI MCP
+
+Compare / Software Side by Side on Research Boards - G2 MCP
+
+Read / Verified Reviews & Ratings - G2 MCP
+
+Browse / Software Categories & Vendors - G2 MCP 
+
+______________________________________________________________________________________
+
+Design
+
+
+Design and Build / App Screens & Web Pages From a Plain-Language Request - Replit MCP (design the look in Claude Design first, then import it below)
+
+Import / A Design From a Claude Design Link Into a Working App - Replit MCP
+
+Revise / Layout, Colors & Copy by Request, Then Preview and Publish - Replit MCP
+
+Search / Real App Screens (iOS, web) - Mobbin MCP (connected now; needs a paid Mobbin plan)
+
+Follow / Full User Flows Such as Onboarding and Checkout - Mobbin MCP
+
+Pull / Page Sections and Your Saved Collections - Mobbin MCP
+
+Draw and Map / Diagrams & Whiteboards - Excalidraw MCP
+
+Compose and Produce / Music - Suno
+
+______________________________________________________________________________________
+
+Coding
+
+Build, Publish, and Host / iPhone/Android App, Web App & Website - Replit MCP
+
+Host and Scale / Later Only - AWS MCP (Replit already hosts and charges; use AWS only if you outgrow Replit)
+
+File, Fix, and Report Back / Self-Healing Tickets for Agents (Debugger agent) - GitHub Issues MCP
+
+Script and Test / Web Steps for Agent SOPs - Playwright MCP + AgentQL MCP
+______________________________________________________________________________________
+
+Agent Safety
+
+Scan / Skill Folders for Risky Code (returns a risk level, tags & evidence) - GoPlus AgentGuard MCP
+
+Judge: Allow, Deny, or Ask / Commands, File Reads & Writes, Network Requests, Secret Access & Web Searches Before They Run - GoPlus AgentGuard MCP
+
+Simulate / Crypto Transactions & Signatures for Scams - GoPlus AgentGuard MCP
+
+Look Up, Approve, and Revoke / Trust Records for Skills (set what each may touch) - GoPlus AgentGuard MCP
+
+Use it for: Every outside skill, repo & add-on before installing
+
+______________________________________________________________________________________
+
+Investments
+
+
+Pull and Chart / Prices & Fundamentals - OpenBB MCP (free, runs on the Mac, installed)
+
+Pull / Options Chains - OpenBB MCP
+
+Pull and Read / Macro Data & News - OpenBB MCP
+
+Quote and Chart / Stocks, ETFs, Forex, Crypto, Commodities & Indexes (free: 250 calls a day) - FMP MCP
+
+Read and Value / Financial Statements, DCF Values, Analyst Ratings & Earnings Transcripts - FMP MCP
+
+Track / Insider Trades, 13F Holdings, SEC Filings & Senate Trades - FMP MCP
+
+Look Up / Economic & Earnings Calendars, Technical Indicators & ESG Scores - FMP MCP
+
+Paper-Trade, Place, Replace, and Cancel / Stock, Options & Crypto Orders (market, limit, stop, trailing stop, bracket, multi-leg) - Alpaca MCP
+
+Read / Balances, Buying Power, Positions & Profit/Loss History - Alpaca MCP
+
+Close / Positions, Fully or Partly - Alpaca MCP
+
+Pull / Live & Past Quotes, Bars, Option Chains with Greeks, News & Top Movers (some live data needs the Algo Trader Plus plan)
+- Alpaca MCP 
+Create and Edit / Watchlists - Alpaca MCP
+
+Read / Accounts, Positions, Portfolio & Profit/Loss - Interactive Brokers MCP
+
+Pull and Look Up / Quotes, Price History & Contracts - Interactive Brokers MCP
+
+Preview, Place, and Cancel / Market & Limit Orders - Interactive Brokers MCP
+
+Read / Executions, Trade History & Cash Transactions - Interactive Brokers MCP
+
+Pull / Funding Rates, Open Interest & Liquidations (Hyperliquid, Lighter) - 0xArchive (for the funding-carry idea; US access unverified)
+
+Pull / Candles, Trades & Order Books (Hyperliquid, Lighter) - 0xArchive MCP
+
+Watch / Wallet Positions & Webhook Alerts - 0xArchive MCP
+
+Read / Event Markets, Prices & Order Books - Kalshi
+
+Place and Cancel / Limit Orders (demo account first) - Kalshi
+
+Track / Positions & Settlements - Kalshi
+
+Backup (free, overlaps FMP)
+
+Chart and Backtest / Daily, Weekly, Monthly & Intraday Prices (Free: 25 calls a day) - Alpha Vantage MCP 
+
+Calculate / Dozens of Technical Indicators (RSI, MACD, Bollinger Bands) - Alpha Vantage MCP
+
+Read and Track / Fundamentals, Earnings, News Sentiment, Treasury Yields, CPI & Jobs Data - Alpha Vantage MCP
+
+Quote and Chart / Stocks, ETFs, Forex & Crypto - Twelve Data MCP
+
+Calculate / 60+ Technical Indicators - Twelve Data MCP
+
+Read / Financials, Earnings, Dividends, Splits & Analyst Targets - Twelve Data MCP
+
+Pull / End-of-Day Stock Prices (free: 5 calls a minute) - Massive MCP 
+
+Look Up / Tickers - Massive MCP
+
+Check / Market Open Days - Massive MCP
+
+Rate and Compare / Stocks by Zacks Rank, Style Scores & Wall Street Ratings - Zacks MCP
+
+Read / Income Statements, Balance Sheets & Cash Flow - Zacks MCP
+
+Read and Follow / Research Reports, Analyst Commentary, Real-Time News & Trending Tickers - Zacks MCP
+
+Track / Congress & Insider Trades - Quiver Quant MCP
+
+Look Up / Government Contracts, Lobbying & Patents - Quiver Quant MCP
+
+Read / Dark-Pool Activity, Institutional Holdings & Executive Pay - Quiver Quant MCP
+
+Price and Compare / Up to 4 Coins Side by Side - CoinGecko MCP
+
+Chart and Look Back / Price History by Date or Range - CoinGecko MCP
+
+Scan / Trending Coins, Sectors, Global Market & Crypto News (top gainers and losers need a Pro key) - CoinGecko MCP 
+
+Research (not a trade signal)
+
+Search / Premium News, Filings & Earnings Transcripts With Citations - Bigdata.com MCP (pay-as-you-go; 1,000 credits on your account)
+
+Build / Company, ETF, Sector & Country Tearsheets - Bigdata.com MCP
+
+Screen / Companies by Sentiment, Analyst Revisions & Upcoming Events - Bigdata.com MCP
+
+______________________________________________________________________________________
+
+Financial
+
+
+Read / Balances & Transactions Across Linked Banks - Era Context MCP
+
+Categorize and Tag / Spending, Recurring Charges & Automation Rules - Era Context MCP
+
+Forecast and Compare / Cash Flow & Spending by Period - Era Context MCP
+
+Connect and Import / Bank Accounts & CSV Files - Era Context MCP
+
+Read / Credit Score Factors (payment history, utilization, age, mix, inquiries, total accounts) - Credit Karma MCP
+
+Rate / How Each Factor Is Doing - Credit Karma MCP
+
+Read / Spending Overview - Credit Karma MCP
+
+Look Up / Payments, Orders, Refunds & Customers - Square MCP
+
+Check / Items & Inventory by Location - Square MCP
+
+Create and Change (asks you first) / Orders, Inventory Counts & Refunds - Square MCP
+
+Link Banks and Read / Balances, Transactions & Investments Inside an App You Build - Plaid
+
+Verify / Account and Routing Numbers So Customers Can Pay by Bank - Plaid
+
+Check / Identity and Ownership of a Linked Bank Account - Plaid
+
+Charge / Subscriptions & Paywall Inside an App You Build - Stripe MCP
+
+Collect / One-Time Payments & Checkout Pages - Stripe MCP
+
+Refund and Report / Customers, Refunds, Invoices & Payouts - Stripe MCP
+
+______________________________________________________________________________________
+
+
+Real Estate & Construction
+
+Estimate, Schedule, and Track / Construction Jobs - JobTread MCP
+
+Scan and Measure / Floor Plans - magicplan MCP
+
+Visualize and Redesign / 3D Walkable Floor Plans - WalkMyPlan MCP
+
+
+
+______________________________________________________________________________________
+
+
+Memory
+
+Store and Recall / Long-Term Memory - Obsidian
+
+Save, Search, Link, and Recall / Local Memory Database (122 tools, stays on the Mac) - Perseus Vault MCP
+
+Remember and Search / Past Conversations - Claude Memory
+______________________________________________________________________________________
+
+Career
+
+
+Search / US Jobs by Title, Keywords, Salary Floor, Remote & Seniority - Jobs & Careers
+
+Refine / Results by Company, City or Excluded Words - Jobs & Careers
+
+Apply / To Matching US Postings (its description says it can apply; not tested) - Jobs & Careers
+
+Search / Full-Time & Remote Jobs With Pay Ranges and Apply Links - Indeed MCP
+
+Read / Job Details & Company Data - Indeed MCP
+
+Read / Your Indeed Resume - Indeed MCP
+
+Match / AI Job Matches & Early Alerts - Jobright
+
+Tailor and Autofill / A Resume per Job, 1-Click Application Autofill - Jobright
+
+Find / Insider Referrals (alumni and hiring managers) - Jobright 
+Search / Remote & Full-Time Jobs by Role and Salary Floor (filter tops out at $300K) - ZipRecruiter MCP
+
+Filter / By Seniority, Employment Type & Posting Date - ZipRecruiter MCP
+
+Open / Each Job’s Apply Link (you apply) - ZipRecruiter MCP
+
+Score / Your LinkedIn Profile on 8 Dimensions + AI Resilience Score - RankedIn MCP
+
+Compare / Your LinkedIn Profile Against Peers (percentiles) - RankedIn MCP
+
+Recommendation / Strengths, Gaps & Specific Fixes - RankedIn MCP
+
+______________________________________________________________________________________
+
+
+Shopping
+
+Search / Local Deals by Area, Price, Rating & Occasion (US and Canada) - Groupon MCP
+
+Read / Deal Details, Fine Print, Locations & Reviews - Groupon MCP
+
+Filter / Deals You Can Book Online or Give as Gifts - Groupon MCP
+
+Search / New & Used Car Listings - CarGurus MCP
+
+Read / A Listing’s Full Details - CarGurus MCP
+
+Compare / Prices Across Listings - CarGurus MCP
+
+Search / Products Across Shopify Stores - Shop MCP
+
+Build and Check Out / A Cart, Then a Checkout You Approve Before Paying - Shop MCP
+
+Track / Orders & Shipments From Any Store - Shop MCP
+
+Shop / Same-Day Groceries From Local Stores - Shipt MCP
+
+Browse / Products at Your Store or Another Store - Shipt MCP
+
+Edit / Your Cart: Add, Swap or Remove Items - Shipt MCP
+
+
+
+______________________________________________________________________________________
+
+______________________________________________________________________________________
+Coming Next – Oct 23 Batch
+46 specialist roles from Agency Agents staffing the 13 departments; find-skills; 10 new mods (Goal Meter, Brain Dump, Handoff, Reflect, Chat Inventory, Switchboard, Auto Model, Today's Report, Design Picker, Assumption Check); a 3D Temple world of the agents built with Three.js. Details in the Temple vault: 99_Review Queue, Repos and Mods Batch - 2026-10-23.
+

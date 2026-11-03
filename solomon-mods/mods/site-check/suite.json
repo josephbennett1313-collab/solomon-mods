@@ -1,0 +1,7 @@
+{
+  "title": "Site Check",
+  "what": "/sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes",
+  "command": "/sitecheck",
+  "pane": false,
+  "parts": []
+}

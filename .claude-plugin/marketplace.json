@@ -12,7 +12,7 @@
       "name": "session-keeper",
       "source": "./mods/session-keeper",
       "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },

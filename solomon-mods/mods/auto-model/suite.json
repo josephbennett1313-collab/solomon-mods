@@ -1,0 +1,33 @@
+{
+  "title": "Auto Model",
+  "what": "Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
+  "command": "/automodel",
+  "pane": false,
+  "parts": [
+    {
+      "key": "model",
+      "label": "Pick the model for each prompt"
+    },
+    {
+      "key": "effort",
+      "label": "Pick the effort for each prompt"
+    },
+    {
+      "key": "fast",
+      "label": "Turn on Fast mode when speed matters"
+    },
+    {
+      "key": "ultracode",
+      "label": "Add ultracode to big multi-file code jobs (runs many helpers, uses more of your plan)",
+      "default": false
+    },
+    {
+      "key": "compact",
+      "label": "Compact before a switch that would re-read a long chat"
+    },
+    {
+      "key": "chip",
+      "label": "Model chip above the prompt"
+    }
+  ]
+}

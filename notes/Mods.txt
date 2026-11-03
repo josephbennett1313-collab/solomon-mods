@@ -1,0 +1,21 @@
+Mods
+
+Brain-Dump (better prompts)
+Catches a long, messy prompt before Claude reads it, asks you 2 or 3 questions about the gaps, then fills the prompt box with a clear four-part prompt: the job, the why, the guardrails, and what done means. 
+Helper Desk (subagents)
+A purple task bar above the prompt fills as Claude ticks off its to-do list. A side panel shows one live card per subagent, with its current step, its progress, its tokens and its time. 
+Cache Clock (lower cost)
+After each reply, a countdown shows how long until the chat's cache goes cold and the next message gets much more expensive. Keep warm pings the cache just before it runs out, so the timer starts again. 
+Handoff (long chats)
+At 250k tokens, when the cache goes cold, or when you type /handoff, it writes a detailed handoff prompt of the whole chat and starts a fresh chat with it. You move on without losing context, and you can send the prompt to a teammate too. 
+Reflect (memory)
+When you give Claude a hard rule, like "never use em dashes", a pop-up asks if you want to keep it: Save everywhere (your CLAUDE.md), Save to vault (a rules folder you choose), or Skip. You decide what Claude remembers. 
+Chat Inventory (what Claude used)
+A side panel called In this chat. It lists the to-do list and its goal, every connector with its call count, the skills used, and the files Claude read and made. 
+Screen-Share Mode (privacy)
+Type /screen-share and every name, email, phone number and money amount on screen turns into a grey bar. Claude still reads the real data, so you can record or share your screen safely. 
+Replay Theater (review edits)
+Type /replay to step through every edit Claude made to your files in the last turn, one change at a time. This one is Anthropic's own sample mod, included under its Apache 2.0 license. 
+Switchboard (all mods in one place)
+Type /mods to open one list of every mod you run. Switch each one on or off, hide its panel, and see new mods show up by themselves.
+

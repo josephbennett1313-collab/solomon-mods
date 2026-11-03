@@ -1,0 +1,11 @@
+{
+  "name": "session-ledger",
+  "version": "2.0.0",
+  "description": "Session Ledger: In this chat (to-dos, connectors, skills, files, repos, vault folders) and a Today / Week / Month / Year report at your hourly rate",
+  "author": {
+    "name": "Joseph Bennett"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/josephbennett1313-collab/solomon-mods",
+  "types": "./types/index.d.ts"
+}
