@@ -318,7 +318,7 @@
   },
   {
     "name": "privacy-shield",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "title": "Privacy Shield",
     "what": "Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
     "command": "/screen-share",
