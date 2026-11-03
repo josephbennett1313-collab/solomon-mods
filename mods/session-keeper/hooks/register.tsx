@@ -1,5 +1,5 @@
 // Session Keeper (Solomon Mods): keeps a chat cheap and tells you the best move right now.
-// - The bar: crab, cache minutes left, context %, "rewrite ≈ $" (what re-reading the chat costs
+// - The bar: crab, a health grade (A to F), cache minutes left, context %, "rewrite ≈ $" (what re-reading the chat costs
 //   once the cache is cold), "session $" (this chat's /cost), 5-hour and weekly use.
 // - The smart button: the one command that helps most right now (Compact, Handoff, Doctor ...),
 //   with why. The ▾ opens a balanced grid of every command this Claude Code has.
@@ -108,6 +108,19 @@ function costs(b: Bar) {
     rewrite: (b.tokens / 1e6) * p.input * writeRate * speed,
     warm: (b.tokens / 1e6) * p.read * speed,
   }
+}
+
+/** A health grade for the chat, A to F, from how full the context is, the cache and recent errors. */
+function grade(b: Bar): { letter: string; color: string } {
+  let points = 100
+  if (b.percent >= 85) points -= 45
+  else if (b.percent >= 70) points -= 30
+  else if (b.percent >= 50) points -= 15
+  else if (b.percent >= 30) points -= 5
+  if (isCold(b) && b.tokens > 100_000) points -= 15
+  points -= Math.min(20, errorsThisTurn * 5)
+  const letter = points >= 90 ? 'A' : points >= 78 ? 'B' : points >= 65 ? 'C' : points >= 50 ? 'D' : 'F'
+  return { letter, color: letter === 'A' || letter === 'B' ? STATUS.good : letter === 'C' ? STATUS.warn : STATUS.bad }
 }
 
 const left = (b: Bar) => (b.lastEnd ? b.lastEnd + b.ttlMs - Date.now() : b.ttlMs)
@@ -453,11 +466,14 @@ export const register: Register = on => {
       const cacheColor = cold ? STATUS.bad : mins <= 2 ? STATUS.warn : STATUS.good
       const cacheText = !b.lastEnd ? 'cache ready' : cold ? 'cache cold' : `cache warm ${mins}m`
       const sep = <Text dimColor>{' │ '}</Text>
+      const gr = grade(b)
+      const main = s?.main.command ?? ''
       mine.push(
         <Box key="bar" flexDirection="row" alignItems="center" justifyContent="space-between" width={width}>
           <Box flexDirection="row" alignItems="center" columnGap={1}>
             {crab('sk-bar')}
             <Text wrap="truncate-end">
+              <Text color={gr.color} bold>{`${gr.letter} `}</Text>
               <Text color={cacheColor}>● </Text>
               <Text color={cacheColor} bold>{cacheText}</Text>
               {warmUntil > Date.now() ? <Text color={STATUS.info}> · keeping warm</Text> : null}
@@ -479,6 +495,8 @@ export const register: Register = on => {
           </Box>
           <Box flexDirection="row" alignItems="center" columnGap={1}>
             {showSuggest && s ? <Button key="smart" variant="primary" label={nice(s.main.command)} onPress={() => void runCommand($, s.main.command)} /> : null}
+            {main !== 'handoff' ? <Button key="fresh" label="Start fresh" onPress={() => void startHandoff($)} /> : null}
+            {main !== 'keepwarm' ? <Button key="warm" label="Keep warm" onPress={() => void keepWarm($)} /> : null}
             <Button key="toggle" plain label={open ? '▴' : '▾'} onPress={() => $.state.set(EXPANDED, !open)} />
           </Box>
         </Box>,

@@ -12,7 +12,7 @@
       "name": "session-keeper",
       "source": "./mods/session-keeper",
       "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
-      "version": "2.1.1",
+      "version": "2.2.0",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -32,7 +32,7 @@
       "name": "helper-desk",
       "source": "./mods/helper-desk",
       "description": "Helper Desk: A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -102,7 +102,7 @@
       "name": "auto-model",
       "source": "./mods/auto-model",
       "description": "Auto Model: Picks the model, effort, Fast mode and ultracode for every prompt, and compacts first when a switch would re-read a long chat",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "author": {
         "name": "Joseph Bennett"
       },
@@ -112,7 +112,7 @@
       "name": "file-tree",
       "source": "./mods/file-tree",
       "description": "File Tree: A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "author": {
         "name": "Joseph Bennett"
       },

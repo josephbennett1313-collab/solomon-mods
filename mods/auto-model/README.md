@@ -22,7 +22,7 @@ Turn it, or any part of it, on or off from the Mods tab (`/mods`).
 - `model`: Pick the model for each prompt
 - `effort`: Pick the effort for each prompt
 - `fast`: Turn on Fast mode when speed matters
-- `ultracode`: Add ultracode to big multi-file code jobs (runs many helpers, uses more of your plan)
+- `ultracode`: Turn on ultracode by itself for big multi-file code jobs (runs many helpers, uses more of your plan)
 - `compact`: Compact before a switch that would re-read a long chat
 - `chip`: Model chip above the prompt
 

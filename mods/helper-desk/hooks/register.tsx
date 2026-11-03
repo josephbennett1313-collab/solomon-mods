@@ -105,9 +105,18 @@ export const register: Register = on => {
     return { text: `Added to Helper Desk: ${text}` }
   })
 
+  // The dock: tell Claude how big a team to split the job across.
+  on('prompt.compose', async ($, e, next) => {
+    const r = await next(e)
+    if (!(await partOn($, NAME, 'dock'))) return r
+    const dock = await dockOf($)
+    if (dock.size < 1) return r
+    return { sections: [...r.sections, { id: 'helper-desk:team', scope: 'session' as const, text: `Team size: the user chose a team of ${dock.size} helper agent${dock.size === 1 ? '' : 's'} for their next request. Split the work into up to ${dock.size} independent pieces and run them as helpers at the same time where the pieces do not depend on each other. Never run more than ${dock.size} at once.${dock.model ? ` Use the model ${dock.model} for them.` : ''}` }] }
+  })
+
   on('command.run', { command: 'team' }, async ($, e) => {
     const n = Number.parseInt(String(e.args ?? ''), 10)
-    if (!Number.isFinite(n) || n < 0 || n > 20) return { text: 'Give a number from 0 (no limit) to 20, like /team 3.' }
+    if (!Number.isFinite(n) || n < 0 || n > 100) return { text: 'Give a number from 0 (no limit) to 100, like /team 3.' }
     await setDock($, { ...(await dockOf($)), size: n })
     return { text: n ? `Up to ${n} helpers at once.` : 'No limit on helpers.' }
   })
@@ -234,7 +243,8 @@ export const register: Register = on => {
             <Text dimColor>Helpers at once</Text>
             <Button key="d-minus" label="−" onPress={() => setDock($, { ...dock, size: Math.max(0, dock.size - 1) })} />
             <Text bold>{dock.size ? String(dock.size) : 'no limit'}</Text>
-            <Button key="d-plus" label="+" onPress={() => setDock($, { ...dock, size: Math.min(20, dock.size + 1) })} />
+            <Button key="d-plus" label="+" onPress={() => setDock($, { ...dock, size: Math.min(100, dock.size + 1) })} />
+            {[1, 3, 5, 10, 25, 100].map(n => <Button key={`d-${n}`} plain variant={dock.size === n ? 'primary' : undefined} label={String(n)} onPress={() => setDock($, { ...dock, size: n })} />)}
           </Box>
           <Box flexDirection="row" columnGap={1} alignItems="center">
             <Text dimColor>Helper model</Text>

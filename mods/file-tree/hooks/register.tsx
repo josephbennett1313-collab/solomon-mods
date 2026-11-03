@@ -70,11 +70,11 @@ async function buildTree($: EngineInterface) {
   await $.state.set(TREE, nodes)
 }
 
-async function touch($: EngineInterface, path: string, kind: 'read' | 'edit') {
+async function touch($: EngineInterface, path: string, kind: 'read' | 'edit' | 'commit') {
   if (!path || path.includes('*')) return
   const cur = (await $.state.get(TOUCHED)).value ?? []
   const old = cur.find(t => t.path === path)
-  const t: Touch = { path, reads: (old?.reads ?? 0) + (kind === 'read' ? 1 : 0), edits: (old?.edits ?? 0) + (kind === 'edit' ? 1 : 0), last: Date.now() }
+  const t: Touch = { path, reads: (old?.reads ?? 0) + (kind === 'read' ? 1 : 0), edits: (old?.edits ?? 0) + (kind === 'edit' ? 1 : 0), commits: (old?.commits ?? 0) + (kind === 'commit' ? 1 : 0), last: Date.now() }
   await $.state.set(TOUCHED, [t, ...cur.filter(x => x.path !== path)].slice(0, 200))
 }
 
@@ -94,6 +94,23 @@ export const register: Register = on => {
     await buildTree($)
     await $.ui.open({ id: PANE, title: 'Files' })
     return { text: 'The Files tab is open.' }
+  })
+
+  // A git commit marks the files it contained as committed.
+  on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
+    const r = await next(e)
+    const cmd = String((e as unknown as Record<string, unknown>).command ?? '')
+    if (r.deny === undefined && /\bgit\b[^|;&]*\bcommit\b/.test(cmd) && (await partOn($, NAME))) {
+      try {
+        const root = (await $.state.get(ROOT)).value ?? ''
+        const out = await $.process.run(['git', '-C', root, 'show', '--name-only', '--pretty=format:', 'HEAD'])
+        for (const f of String(out.stdout ?? '').split('\n').map(x => x.trim()).filter(Boolean)) await touch($, `${root}/${f}`, 'commit')
+        void buildTree($)
+      } catch (err) {
+        await log($, NAME, `commit: ${String(err)}`)
+      }
+    }
+    return r
   })
 
   on('tool.call', async ($, e, next) => {
@@ -134,13 +151,13 @@ export const register: Register = on => {
         <Text color={now ? LIVE : undefined} dimColor={!now}>{now ? '●' : '○'}</Text>
         <Text bold={!!now} dimColor={!now} wrap="truncate-end">{now ? `${now.verb} ${cut(rel(root, now.path), cols - 16)}` : 'Claude is not touching a file right now'}</Text>
       </Box>,
-      <Text key="t-title" bold>Touched in this chat · {plural(touched.length, 'file')} · {edits} changed</Text>,
+      <Text key="t-title" bold>Touched in this chat · {plural(touched.length, 'file')} · {edits} changed · {touched.filter(t => (t.commits ?? 0) > 0).length} committed</Text>,
     ]
     if (touched.length === 0) parts.push(<Text key="t-none" dimColor>Nothing yet. Files show up here as Claude reads or changes them.</Text>)
     for (const t of touched.slice(0, 15)) {
       parts.push(
         <Text key={`t-${t.path}`} wrap="truncate-end">
-          <Text color={t.edits ? STATUS.warn : STATUS.info}>{t.edits ? '✎' : '◦'}</Text> {cut(rel(root, t.path), cols - 18)} <Text dimColor>{t.edits ? `${t.edits} edit${t.edits === 1 ? '' : 's'}` : `read ${t.reads}×`}</Text>
+          <Text color={t.commits ? STATUS.good : t.edits ? STATUS.warn : STATUS.info}>{t.commits ? '✔' : t.edits ? '✎' : '◦'}</Text> {cut(rel(root, t.path), cols - 24)} <Text dimColor>{[t.reads ? `opened ${t.reads}×` : '', t.edits ? `edited ${t.edits}×` : '', t.commits ? 'committed' : ''].filter(Boolean).join(' · ')}</Text>
         </Text>,
       )
     }

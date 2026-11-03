@@ -1,12 +1,12 @@
 {
   "title": "Mission Control",
-  "what": "A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
+  "what": "A goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat",
   "command": "/mission \u00b7 /alltasks (and Claude Code's /goal)",
   "pane": true,
   "parts": [
     {
       "key": "taskbar",
-      "label": "Red task bar above the prompt"
+      "label": "Task bar above the prompt"
     },
     {
       "key": "goal",

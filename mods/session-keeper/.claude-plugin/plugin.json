@@ -1,6 +1,6 @@
 {
   "name": "session-keeper",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Session Keeper: A cache bar above the prompt with rewrite and session cost, a smart next-command button, a hold on cold-cache messages, and a device-aware handoff",
   "author": {
     "name": "Joseph Bennett"

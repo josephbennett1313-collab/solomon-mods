@@ -224,8 +224,7 @@ export const CATALOG: ModInfo[] = [
       },
       {
         "key": "ultracode",
-        "label": "Add ultracode to big multi-file code jobs (runs many helpers, uses more of your plan)",
-        "default": false
+        "label": "Turn on ultracode by itself for big multi-file code jobs (runs many helpers, uses more of your plan)"
       },
       {
         "key": "compact",

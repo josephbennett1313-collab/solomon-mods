@@ -99,6 +99,13 @@ async function applySetting($: EngineInterface, command: 'model' | 'effort', arg
 }
 
 /** The ON/OFF switch on the chip: writes the same switch /mods uses. */
+async function togglePart($: EngineInterface, part: 'fast' | 'ultracode', byDefault: boolean) {
+  const json = await readSwitches($, true)
+  const now = !isPartOn(json, NAME, part, byDefault)
+  await writeSwitches($, { ...json, [`${NAME}:${part}`]: now })
+  if (!now && part === 'fast') await setFast($, false)
+}
+
 async function toggle($: EngineInterface, value: boolean) {
   const json = await readSwitches($, true)
   await writeSwitches($, { ...json, [NAME]: value })
@@ -117,7 +124,7 @@ async function choose($: EngineInterface, text: string): Promise<string> {
   let model = useModel ? (FABLE_RE.test(text) ? MODELS.fable : plan.model) : ''
   let eff: Effort | '' = useEffort ? (MAX_RE.test(text) ? 'max' : plan.effort) : ''
   const fast = tier === 'urgent' && (await partOn($, NAME, 'fast'))
-  const ultra = BIG_CODE_RE.test(text) && !/\bultracode\b/i.test(text) && (await partOn($, NAME, 'ultracode', false))
+  const ultra = BIG_CODE_RE.test(text) && !/\bultracode\b/i.test(text) && (await partOn($, NAME, 'ultracode'))
   const before = current || (await $.session.model().catch(() => ''))
   let compacted = false
   let why = `${plan.label}`
@@ -211,14 +218,16 @@ export const register: Register = on => {
     const { Box, Text, Button } = $.ui.resolve(e)
     const effortColor = p ? { low: STATUS.good, medium: STATUS.info, high: STATUS.warn, xhigh: ACCENT, max: STATUS.bad }[p.effort] : undefined
     const live = isOn && p
+    const fastOn = isPartOn(json, NAME, 'fast')
+    const ultraOn = isPartOn(json, NAME, 'ultracode')
     const chip = (
       <Box key="am" flexDirection="row" columnGap={1} alignItems="center">
         <Text bold>Auto Model</Text>
         <Button key="am-toggle" variant={isOn ? 'primary' : undefined} label={isOn ? 'ON' : 'OFF'} onPress={() => toggle($, !isOn)} />
         {live ? <Text bold color={colorOf(p.model)}>{`● ${friendly(p.model)} ✓`}</Text> : null}
         {live ? <Text color={effortColor}>{`${p.effort} effort`}</Text> : null}
-        {live && p.fast ? <Text color={STATUS.warn}>⚡ Fast</Text> : null}
-        {live && p.ultracode ? <Text color={STATUS.info}>ultracode</Text> : null}
+        {isOn ? <Button key="am-fast" variant={fastOn ? 'primary' : undefined} label={`⚡ Fast ${live && p.fast ? 'ON' : fastOn ? 'auto' : 'OFF'}`} onPress={() => togglePart($, 'fast', true)} /> : null}
+        {isOn ? <Button key="am-ultra" variant={ultraOn ? 'primary' : undefined} label={`Ultracode ${live && p.ultracode ? 'ON' : ultraOn ? 'auto' : 'OFF'}`} onPress={() => togglePart($, 'ultracode', true)} /> : null}
         <Text dimColor wrap="truncate-end">{isOn ? (p ? `· ${p.why}` : '· sets the model, effort and Fast mode each time you send') : '· off: your own model stays as set'}</Text>
       </Box>
     )

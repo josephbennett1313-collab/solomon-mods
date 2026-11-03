@@ -1,6 +1,6 @@
 # Helper Desk
 
-A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock.
+A Helper Desk tab with a crab card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock.
 
 Part of [Solomon Mods](https://github.com/josephbennett1313-collab/solomon-mods), a free set of Claude Code mods by Joseph Bennett.
 

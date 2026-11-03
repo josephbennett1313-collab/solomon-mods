@@ -1,6 +1,6 @@
 {
   "name": "site-check",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "Site Check: /sitecheck scores a website's speed, SEO and accessibility with Lighthouse and explains the fixes",
   "author": {
     "name": "Joseph Bennett"

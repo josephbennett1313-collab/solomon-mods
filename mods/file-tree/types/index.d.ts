@@ -1,4 +1,4 @@
-export type Touch = { path: string; reads: number; edits: number; last: number }
+export type Touch = { path: string; reads: number; edits: number; commits?: number; last: number }
 export type Node = { path: string; name: string; depth: number; dir: boolean; changed: string }
 export type Now = { verb: string; path: string; at: number }
 

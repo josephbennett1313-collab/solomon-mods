@@ -6,7 +6,7 @@
   "parts": [
     {
       "key": "autoopen",
-      "label": "Open the pane by itself"
+      "label": "Open the tab when a chat starts"
     },
     {
       "key": "report",

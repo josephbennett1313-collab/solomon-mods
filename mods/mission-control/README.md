@@ -1,6 +1,6 @@
 # Mission Control
 
-A red goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat.
+A goal bar that tracks the real task list, /goal, and an All Tasks view across every open chat.
 
 Part of [Solomon Mods](https://github.com/josephbennett1313-collab/solomon-mods), a free set of Claude Code mods by Joseph Bennett.
 
@@ -19,7 +19,7 @@ Turn it, or any part of it, on or off from the Mods tab (`/mods`).
 
 ## Parts you can switch off
 
-- `taskbar`: Red task bar above the prompt
+- `taskbar`: Task bar above the prompt
 - `goal`: Goal meter for /goal
 - `activity`: Activity feed in plain words
 - `smart-words`: Smarter activity wording (uses a small model call)

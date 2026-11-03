@@ -1,6 +1,6 @@
 {
   "name": "collision-guard",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "Collision Guard: Stops two open chats editing the same file: proceed, move to a worktree, or cancel",
   "author": {
     "name": "Joseph Bennett"

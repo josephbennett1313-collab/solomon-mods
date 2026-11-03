@@ -1,6 +1,6 @@
 {
   "title": "Helper Desk",
-  "what": "A Helper Desk tab with a fox card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
+  "what": "A Helper Desk tab with a crab card per helper agent, chat cost, helper tokens and time, a saved to-do list, and a team-size dock",
   "command": "/helpers \u00b7 /team",
   "pane": true,
   "parts": [

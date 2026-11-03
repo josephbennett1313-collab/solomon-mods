@@ -19,7 +19,7 @@ Turn it, or any part of it, on or off from the Mods tab (`/mods`).
 
 ## Parts you can switch off
 
-- `autoopen`: Open the pane by itself
+- `autoopen`: Open the tab when a chat starts
 - `report`: Today's Report tab
 
 ## Licence

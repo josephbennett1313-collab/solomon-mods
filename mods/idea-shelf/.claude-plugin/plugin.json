@@ -1,6 +1,6 @@
 {
   "name": "idea-shelf",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "Idea Shelf: Park side ideas per project in your Obsidian vault without breaking Claude's focus, then send or drop each one",
   "author": {
     "name": "Joseph Bennett"

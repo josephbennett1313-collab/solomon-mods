@@ -1,6 +1,6 @@
 {
   "name": "file-tree",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "File Tree: A Files tab showing what Claude is reading or editing right now, every file it touched, and the folder tree with changes highlighted",
   "author": {
     "name": "Joseph Bennett"

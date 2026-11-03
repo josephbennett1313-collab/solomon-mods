@@ -1,6 +1,6 @@
 {
   "name": "limit-guard",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "Limit Guard: Stops runaway helpers, huge prompts and retry loops before they burn your plan limits",
   "author": {
     "name": "Joseph Bennett"
