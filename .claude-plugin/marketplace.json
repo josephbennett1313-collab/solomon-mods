@@ -152,7 +152,7 @@
       "name": "privacy-shield",
       "source": "./mods/privacy-shield",
       "description": "Privacy Shield: Masks names, emails, phones and amounts while you share your screen, keeps keys out of what Claude reads, and blocks .env and SSH key files",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
