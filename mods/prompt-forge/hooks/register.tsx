@@ -1,6 +1,7 @@
 // Prompt Forge (Solomon Mods): one check on every prompt you send, so two mods never both stop it.
 // - Long and loose (a voice-note brain dump): ask the questions that matter, then shape it into a brief in the
-//   shape Anthropic recommends: "Act as <role>", then context and why, the task, guardrails, done means, output.
+//   order Anthropic's prompting guide recommends: "Act as <role>", the job (numbered steps), the why,
+//   the guardrails (as what to do), done means, and the output. Labelled after Ben AI's Brain Dump.
 // - Short and vague: suggest a sharper version; you pick which is sent (Michael Goldenberg's Prompt Coach, MIT).
 // - /forge <prompt>: upgrade any prompt on demand and put it in the box to edit (the Prompt Upgrade idea).
 // Nothing is ever rewritten silently: every change needs your pick.
@@ -13,27 +14,30 @@ const NAME = 'prompt-forge'
 const settings = { coachModel: 'haiku', shapeModel: 'sonnet', minChars: 8, dumpWords: 120 }
 
 // ---------- Brain dump → brief ----------
-const HEADINGS = ['Act as', 'CONTEXT', 'TASK', 'GUARDRAILS', 'DONE MEANS', 'OUTPUT'] as const
+const HEADINGS = ['Act as', 'THE JOB', 'THE WHY', 'THE GUARDRAILS', 'DONE MEANS', 'OUTPUT'] as const
 const MAX_QUESTIONS = 3
 const SKIPPED = 'skipped, no answer'
 const queue: string[] = []
 const SHAPE = 'Shape it'
 const AS_IS = 'Send as is'
 
-const SHAPE_SYSTEM = `You rewrite a person's spoken brain dump into a clear brief for Claude, in the shape Anthropic's prompting guide recommends: say who Claude should be, give the context and the reason, state the task plainly, then the limits, how success is judged and the output format.
+const SHAPE_SYSTEM = `You rewrite a person's spoken brain dump into a clear brief for Claude, in the order Anthropic's prompting guide recommends: give Claude a role in one sentence, state the job plainly with numbered steps where order matters, give the context and the reason behind it, state the rules as what to do, say how success is judged, and be specific about the output.
 
 Output exactly this shape and nothing else, no preamble, no code fences:
 
-Act as <the expert best suited to this job, e.g. "a senior copywriter for small service businesses">.
+Act as <the expert best suited to this job, e.g. "a senior research producer for a YouTube channel">.
 
-CONTEXT
+THE JOB
+<what to make or do, in one plain line>
+1. <step, when the order or the completeness of steps matters>
+2. <step>
+
+THE WHY
 <who it is for, the background Claude needs, and why it matters>
 
-TASK
-<what to make or do, in one to three plain lines>
-
-GUARDRAILS
-- <rules, limits, things to avoid, sources or files to use>
+THE GUARDRAILS
+- <a rule, written as what to do: "Use only the files in X", not "Don't use other files">
+- <a limit: time, length, budget, sources, what stays untouched>
 
 DONE MEANS
 - <how we know it is finished and right>
@@ -45,22 +49,22 @@ Rules:
 - Keep every fact, name, number, date, link, file and tool from the dump. Drop only filler and repeats.
 - Add no new facts, numbers, names or requirements that are not in the dump. The role line may name a fitting expert.
 - Where the dump says nothing for a part, write "unknown: ask me" for that part.
-- The prompt may carry <answers>: follow-up questions the person answered. Treat each answer as their own words and use it in the part it belongs to. Where an answer says it was skipped, write that point as "unknown: ask me".
-- Write CONTEXT to OUTPUT in the person's voice (I, we, my), as if they wrote the brief themselves.
-- Plain, short English. Short lines and bullets.
+- The prompt may carry <answers>: follow-up questions the person answered. Treat each answer as their own words and use it in the part it belongs to. Where an answer says it was skipped, write that point as "unknown: ask me". Where an answer settles a clash, keep the winning side only.
+- Write THE JOB to OUTPUT in the person's voice (I, we, my), as if they wrote the brief themselves.
+- Plain, short English. Short lines, numbered steps and bullets. Tell Claude what to do, not what to avoid, wherever a rule can be put that way.
 - Never use em dashes or en dashes.`
 
 const GAPS_SYSTEM = `You read a person's spoken brain dump before it is turned into a brief for an AI assistant.
-Find only real gaps: two instructions in the dump that contradict each other, or a must-know fact that is missing and would change the work (who it is for, the deadline, the format, which source to use).
+Find only real gaps: two instructions in the dump that clash, or a must-know fact that is missing and would change the work (who it is for, the deadline, the format, which source to use).
 
 Return JSON only, no prose, no code fences, in exactly this shape:
-{"questions":[{"q":"<short question ending in a question mark>","options":["<option>","<option>"]}]}
+{"questions":[{"kind":"clash","said":["<exact words from the dump>","<exact words from the dump>"],"q":"<short question ending in a question mark>","options":["<option>","<option>"]}]}
 
 Rules:
 - 0 to 3 questions. When the dump is clear, return {"questions":[]}. Fewer is better.
+- kind is "clash" when two of the person's own instructions pull against each other; then "said" quotes both, word for word from the dump, each under 12 words. kind is "missing" otherwise, with "said" as [].
 - Never ask about something the dump already answers, and never ask about style or nice-to-haves.
-- For a conflict, name both sides in the question and offer each side as an option.
-- Each question has 2 or 3 short options (1 to 5 words), taken from the dump where possible. No "Other" option.
+- For a clash, each option is one side, in 2 to 7 words. For a missing fact, 2 or 3 likely answers taken from the dump where possible. No "Other" option.
 - Plain, short English. Never use em dashes or en dashes.`
 
 // ---------- Coach ----------
@@ -76,14 +80,14 @@ You get the recent conversation. Resolve "it", "this", "the other one" from it. 
 When you do improve, make the SMALLEST edit: keep their own words and order, and only add what is missing.
 Answer ONLY with JSON: {"verdict":"fine"} or {"verdict":"improve","why":"<max 12 words>","rewrite":"<the improved prompt>"}`
 
-const FORGE_SYSTEM = `You upgrade a person's prompt to Claude into the strongest version of itself, keeping their intent, facts and voice.
-Add only what makes the result better: the goal in one line, who it is for, the format of the answer, constraints they implied, and how to check it is done.
+const FORGE_SYSTEM = `You upgrade a person's prompt to Claude into the strongest version of itself, keeping their intent, facts and voice, in the order Anthropic recommends.
+Open with one line "Act as <the fitting expert>." Then add only what makes the result better: the goal in one line, who it is for and why, numbered steps where order matters, the rules as what to do, how to check it is done, and the format of the answer.
 Never invent facts, numbers, names or sources. Where something important is unknown, write a short bracketed placeholder like [deadline?].
 Plain, short English. No em dashes. Reply with the upgraded prompt only, no preamble, no code fences.`
 
 const SKIP = /^\s*([/!#]|(y|yes|no|n|ok|okay|sure|go|go ahead|continue|proceed|thanks|thank you|do it|lgtm|nope|stop)\b[.!]?\s*$)/i
 
-export type Gap = { q: string; options: string[] }
+export type Gap = { q: string; options: string[]; said: string[] }
 export type QA = { q: string; a: string | null }
 type Verdict = { verdict: 'fine' } | { verdict: 'improve'; why: string; rewrite: string }
 
@@ -136,8 +140,9 @@ export const parseGaps = (raw: string): Gap[] => {
   const out: Gap[] = []
   for (const item of json.questions) {
     if (out.length >= MAX_QUESTIONS) break
-    const { q, options } = (item ?? {}) as { q?: unknown; options?: unknown }
+    const { q, options, said } = (item ?? {}) as { q?: unknown; options?: unknown; said?: unknown }
     if (typeof q !== 'string' || !q.trim() || !Array.isArray(options)) continue
+    const quotes = Array.isArray(said) ? said.filter((x): x is string => typeof x === 'string' && x.trim() !== '').map(x => houseStyle(x.trim())).slice(0, 2) : []
     const opts: string[] = []
     for (const o of options) {
       const label = typeof o === 'string' ? houseStyle(o.trim()) : ''
@@ -147,7 +152,7 @@ export const parseGaps = (raw: string): Gap[] => {
     if (opts.length < 2) continue
     let question = houseStyle(q.trim())
     if (!question.endsWith('?')) question = `${question}?`
-    out.push({ q: question, options: opts })
+    out.push({ q: question, options: opts, said: quotes.length === 2 ? quotes : [] })
   }
   return out
 }
@@ -172,7 +177,8 @@ async function askGaps($: EngineInterface, gaps: Gap[]): Promise<QA[]> {
     status($, `Prompt Forge: question ${i + 1} of ${gaps.length}`)
     let a: string | null = null
     try {
-      a = (await $.ui.ask(g.q, { options: g.options, header: `Dump ${i + 1} of ${gaps.length}` })).trim() || null
+      const text = g.said.length === 2 ? `Two asks clash. Which one wins?\nYou said “${g.said[0]}” and also “${g.said[1]}”.` : g.q
+      a = (await $.ui.ask(text, { options: g.options, header: `Dump ${i + 1} of ${gaps.length}` })).trim() || null
     } catch {
       a = null
     }
@@ -207,7 +213,7 @@ async function fillBox($: EngineInterface, text: string): Promise<boolean> {
 async function shapeFlow($: EngineInterface, text: string) {
   let pick = ''
   try {
-    pick = await $.ui.ask('This looks like a brain dump. Shape it into a clear brief first?', { options: [SHAPE, AS_IS], header: 'Prompt Forge' })
+    pick = await $.ui.ask(`This looks like a brain dump (${words(text)} words). Shape it into a clear brief first?`, { options: [SHAPE, AS_IS], header: 'Prompt Forge' })
   } catch {
     return null
   }

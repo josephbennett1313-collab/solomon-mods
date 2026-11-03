@@ -52,7 +52,7 @@
       "name": "prompt-forge",
       "source": "./mods/prompt-forge",
       "description": "Prompt Forge: Turns a long brain dump into a clear brief in Anthropic's recommended shape, asks the questions that matter first, and queues next prompts with /after",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
