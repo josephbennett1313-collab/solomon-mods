@@ -217,7 +217,8 @@ export function briefOf(s: Style, query: string, motion: 'none' | 'subtle' | '3d
     s.checklist && `Check before you finish: ${oneLine(s.checklist)}`,
     motion === 'subtle' && 'Motion: subtle and quick (150 to 250 ms ease-out on hover, focus and entry). Respect prefers-reduced-motion.',
     motion === '3d' &&
-      'Motion: 3D. Give the hero real depth (CSS perspective and transforms, or three.js for a 3D object), parallax on scroll and cards that tilt toward the pointer. Keep 60 fps, and turn it all off under prefers-reduced-motion.',
+      'Motion: 3D. Give the hero real depth: CSS perspective with translateZ layers and preserve-3d, cards that tilt toward the pointer, parallax on scroll, and a three.js object where one fits. Keep 60 fps (transform and opacity only), and turn it all off under prefers-reduced-motion.',
+    'Build it with current web methods: CSS container queries, scroll-driven animations (animation-timeline), the View Transitions API between screens, color-mix and oklch colours, fluid type with clamp, and :has() for state. Ship semantic HTML with visible focus states.',
     skills.length ? `Use these installed design skills while you build: ${skills.join(', ')}.` : '',
     '(Picked in Design Picker; the style comes from the UI UX Pro Max list.)',
   ]
@@ -231,8 +232,19 @@ export function withMotion(svg: string, motion: 'none' | 'subtle' | '3d'): strin
   const css =
     motion === 'subtle'
       ? '.mv{animation:fl 3s ease-in-out infinite;transform-origin:50% 50%}@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}'
-      : '.mv{animation:tl 4s ease-in-out infinite;transform-origin:50% 60%;transform-box:fill-box}@keyframes tl{0%,100%{transform:skewY(0) scale(1)}25%{transform:skewY(-3deg) scale(1.03) translateX(2px)}75%{transform:skewY(3deg) scale(1.03) translateX(-2px)}}'
+      : '.mv{animation:tl 5s ease-in-out infinite;transform-origin:50% 55%;transform-box:fill-box;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}@keyframes tl{0%,100%{transform:perspective(600px) rotateY(0) rotateX(0)}25%{transform:perspective(600px) rotateY(-9deg) rotateX(3deg) scale(1.02)}75%{transform:perspective(600px) rotateY(9deg) rotateX(-3deg) scale(1.02)}}'
   const open = svg.indexOf('>') + 1
   const close = svg.lastIndexOf('</svg>')
   return `${svg.slice(0, open)}<style>${css}@media (prefers-reduced-motion: reduce){.mv{animation:none}}</style><g class="mv">${svg.slice(open, close)}</g></svg>`
+}
+
+/** Asks Claude for a real, self-contained HTML mock-up of the style, shown as an Artifact. */
+export function mockupPrompt(s: Style, query: string, motion: 'none' | 'subtle' | '3d', skills: string[]): string {
+  return [
+    `Make a visual mock-up of the "${s.name}" style${query ? ` for: ${oneLine(query)}` : ''} before building anything.`,
+    'One self-contained HTML page: every style inline in a <style> block, images as inline SVG or data URIs, no external scripts except from cdnjs. Show the key screen with real-looking copy, a header, the hero, one content section and a footer.',
+    'Publish it as an Artifact so I can look at it, then stop and ask whether to build from it, change it, or try another style.',
+    '',
+    briefOf(s, query, motion, skills),
+  ].join('\n')
 }

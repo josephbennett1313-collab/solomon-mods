@@ -7,13 +7,15 @@
 //   ask to build a page, site, app or screen without naming a style. The pick goes back to Claude
 //   as your next message, with the style's keywords, colours, effects, your motion choice (none,
 //   subtle or 3D) and the design skills you have installed.
-// - Send to Figma asks Claude to lay the style out in Figma through your Figma connector.
+// - Mock-up first asks Claude for a real HTML mock-up as an Artifact before anything is built.
+// - Send to Figma has Claude build that mock-up and push it into your Figma file with the connector's
+//   html_to_figma tool (set {"figmaFile": "<link>"} in ~/.claude/mods/settings.json to skip the question).
 
 import type { EngineInterface, Register } from 'claude-code'
 
 import type { Motion, View } from '../types'
-import { FALLBACK, type Style, briefOf, previewSvg, rank, stylesFromCsv, tokensOf, withMotion } from './styles'
-import { ACCENT, MARK, cut, homeOf, isOn, isPartOn, log as suiteLog, oneLine, readSwitches, roomy } from './suite'
+import { FALLBACK, type Style, briefOf, mockupPrompt, previewSvg, rank, stylesFromCsv, tokensOf, withMotion } from './styles'
+import { ACCENT, MARK, cut, homeOf, isOn, isPartOn, log as suiteLog, oneLine, readJson, readSwitches, roomy } from './suite'
 
 const NAME = 'design-picker'
 const PANE = 'design-picker'
@@ -78,17 +80,28 @@ async function pick($: EngineInterface, n: number) {
   $.clock.after(1, () => void $.prompt.submit({ text: briefOf(s, view.query, view.motion ?? 'subtle', skillsFound), asUser: true }))
 }
 
+async function mockup($: EngineInterface, n: number) {
+  const view = await getView($)
+  const s = (await loadStyles($)).find(x => x.id === view.ids[n])
+  if (!s) return
+  await $.state.set(VIEW, { ...view, picked: s.id })
+  $.clock.after(1, () => void $.prompt.submit({ text: mockupPrompt(s, view.query, view.motion ?? 'subtle', skillsFound), asUser: true }))
+}
+
+/** Send to Figma: Claude makes the HTML mock-up, then puts it in your Figma file with the connector's html_to_figma tool. */
 async function toFigma($: EngineInterface, n: number) {
   const view = await getView($)
   const s = (await loadStyles($)).find(x => x.id === view.ids[n])
   if (!s) return
+  const file = (await readJson<{ figmaFile?: string }>($, 'settings.json', {})).figmaFile ?? ''
   const text = [
-    `Lay out the "${s.name}" style in Figma${view.query ? ` for: ${oneLine(view.query)}` : ''}, using my Figma connector.`,
-    'Make one frame per key screen, a colour and type styles page, and the main components. Use the direction below.',
+    `Put the "${s.name}" style${view.query ? ` for: ${oneLine(view.query)}` : ''} into Figma, using my Figma connector.`,
+    '1. Build the mock-up as one self-contained HTML document (all CSS in a <style> block, images inline as SVG or data URIs, no external resources). Use the direction below.',
+    `2. Call the Figma connector's html_to_figma tool${file ? ` on my file ${file}` : ''} and POST that HTML to the URL it returns. It makes a new page of layers in the file.${file ? '' : ' If you do not know which Figma file to use, ask me for the file link first and do nothing else.'}`,
+    '3. Reply with the Figma link to the new page.',
+    'If the Figma connector is not connected, say so and tell me to connect it under /mcp. Do not make anything else instead.',
     '',
     briefOf(s, view.query, view.motion ?? 'subtle', skillsFound),
-    '',
-    'If the Figma connector is not connected, say so and tell me how to connect it in /mcp. Do not make anything else instead.',
   ].join('\n')
   $.clock.after(1, () => void $.prompt.submit({ text, asUser: true }))
 }
@@ -190,6 +203,7 @@ export const register: Register = (on, options) => {
     else if (e.element === 'close') await $.ui.close({ id: PANE }).catch(() => undefined)
     else if (/^pick-\d+$/.test(e.element)) await pick($, Number(e.element.slice(5)))
     else if (/^figma-\d+$/.test(e.element)) await toFigma($, Number(e.element.slice(6)))
+    else if (/^mock-\d+$/.test(e.element)) await mockup($, Number(e.element.slice(5)))
     else if (/^motion-(none|subtle|3d)$/.test(e.element)) await $.state.set(VIEW, { ...view, motion: e.element.slice(7) as Motion })
     return { element: e.element }
   })
@@ -255,8 +269,9 @@ export const register: Register = (on, options) => {
                 <Text dimColor wrap="wrap">{`Best for: ${cut(oneLine(s.bestFor), textW * 2)}`}</Text>
                 {s.avoid ? <Text dimColor wrap="truncate-end">{`Avoid for: ${cut(oneLine(s.avoid), textW)}`}</Text> : null}
                 <Box flexDirection="row" gap={1}>
-                  <Button key={`pick-${n}`} label={picked ? 'Send again' : 'Use this style'} variant={picked ? 'secondary' : 'primary'} onPress={noop} />
-                  {parts.figma ? <Button key={`figma-${n}`} label="Send to Figma" onPress={noop} /> : null}
+                  <Button key={`pick-${n}`} label={picked ? 'Build again' : 'Build with this'} variant={picked ? 'secondary' : 'primary'} onPress={noop} />
+                  <Button key={`mock-${n}`} label="Mock-up first" onPress={noop} />
+                  {parts.figma ? <Button key={`figma-${n}`} label="Send to Figma" plain onPress={noop} /> : null}
                 </Box>
               </Box>
             </Box>

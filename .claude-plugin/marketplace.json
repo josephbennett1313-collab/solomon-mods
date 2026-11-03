@@ -122,7 +122,7 @@
       "name": "design-picker",
       "source": "./mods/design-picker",
       "description": "Design Picker: Opens by itself on design questions: live mockup cards built with design skills, with motion, and a Send to Figma step",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "author": {
         "name": "Joseph Bennett"
       },
